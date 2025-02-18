@@ -50,6 +50,7 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           base: main
+          branch: ${{ github.ref }}
           title: "pr(main): ${{ github.ref }} -> main"
           body-path: ".github/pull_request_template.md"
           labels: "github-bot 🤖"
