@@ -1,0 +1,48 @@
+name: "🚀 CI Terraform Module Releaser"
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed] # Closed required
+    branches:
+      - main
+
+permissions:
+  contents: write # Required for to push tags, create release, and push changes to the wiki
+  pull-requests: write # Required to comment on pull request
+
+jobs:
+  ci-terraform:
+    name: 🛠️ ci-terraform
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔄 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⛏️ Terraform Setup
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.10.5
+
+      - name: ▶️ Terraform Init
+        run: terraform init
+        working-directory: infra/aws/get-active-tickers
+
+      - name: ⏏️ Terraform Validate
+        run: terraform validate
+        working-directory: infra/aws/get-active-tickers
+
+  release:
+    name: 🚀 terraform-module-releaser
+    runs-on: ubuntu-latest
+    needs:
+      - ci-terraform
+    
+    steps:
+      - name: 🔄 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🚀 Terraform Module Releaser
+        uses: techpivot/terraform-module-releaser@v1.4.1
+        with:
+            default-first-tag: v0.0.1
