@@ -17,7 +17,7 @@ variable "billing_mode" {
   default     = "PAY_PER_REQUEST"
 
   validation {
-    condition     = var.table_billing_mode == "PROVISIONED" || var.table_billing_mode == "PAY_PER_REQUEST"
+    condition     = var.billing_mode == "PROVISIONED" || var.billing_mode == "PAY_PER_REQUEST"
     error_message = "O valor da variável deve ser 'PROVISIONED' ou 'PAY_PER_REQUEST'."
   }
 }
