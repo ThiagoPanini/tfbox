@@ -1,5 +1,5 @@
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/tf-modules-showcase/blob/main/docs/imgs/logo/logo.png?raw=true" width=200 alt="tf-modules-showcase-logo">
+    <br><img src="https://github.com/ThiagoPanini/tf-modules-showcase/blob/feature/mvp-dynamodb-table-module/docs/logo.png?raw=true" width=200 alt="tf-modules-showcase-logo">
 </div>
 
 <div align="center">
