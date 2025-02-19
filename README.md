@@ -1,5 +1,5 @@
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/tf-modules-showcase/blob/feature/mvp-dynamodb-table-module/docs/logo.png?raw=true" width=200 alt="tf-modules-showcase-logo">
+    <br><img src="https://github.com/ThiagoPanini/tf-modules-showcase/blob/main/docs/logo.png?raw=true" width=200 alt="tf-modules-showcase-logo">
 </div>
 
 <div align="center">
@@ -17,11 +17,6 @@
   </a>
 </div>
 
-___
-
-<div align="center">
-  <br>
-</div>
 
 ## Visão Geral
 
