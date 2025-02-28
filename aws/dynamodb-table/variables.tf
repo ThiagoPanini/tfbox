@@ -22,7 +22,7 @@ variable "range_key" {
 }
 
 variable "attributes" {
-  description = "Lista de maps contendo informações sobre os atributos da tabela. Todos os índices definidos para a tabela (hash key e range key) devem, obrigatoriamente, estarem contidos como elementos dessa lista de atributos."
+  description = "Lista de maps contendo informações sobre os atributos da tabela no formato [{'name': 'field_name', 'type': 'field_type'}]. Todos os índices definidos para a tabela (hash key e range key) devem, obrigatoriamente, estarem contidos como elementos dessa lista de atributos."
   type        = list(map(string))
   default     = []
 
