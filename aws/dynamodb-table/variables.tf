@@ -1,5 +1,5 @@
 /* --------------------------------------------------------
-ARQUIVO: variables.tf @ get-active-tickers module
+ARQUIVO: variables.tf @ aws/dynamodb-table module
 
 Variáveis utilizadas no módulo aws/dynamodb-table para
 definição e criação de tabelas no DynamoDB
@@ -22,7 +22,7 @@ variable "range_key" {
 }
 
 variable "attributes" {
-  description = "Lista de maps contendo informações sobre os atributos da tabela no formato [{'name': 'field_name', 'type': 'field_type'}]. Todos os índices definidos para a tabela (hash key e range key) devem, obrigatoriamente, estarem contidos como elementos dessa lista de atributos."
+  description = "Informações sobre os atributos utilizados em index (hash e range key) da tabela no formato [{'name': 'field_name', 'type': 'field_type'}]. Todos os índices definidos para a tabela (hash key e range key) devem, obrigatoriamente, estarem contidos como elementos dessa lista de atributos."
   type        = list(map(string))
   default     = []
 
