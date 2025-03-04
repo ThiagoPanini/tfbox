@@ -32,7 +32,9 @@ Inspirado pelo compilado de módulos Terraform disponível em [github/terraform-
 
 ## Documentações dos Módulos
 
-📚 O repositório foi pré configurado para lançar novas *releases* dos módulos construídos de forma automática através da *action* [terraform-module-releaser](https://github.com/techpivot/terraform-module-releaser). Para verificar as versões e todos os detalhes de documentação disponíveis, acesse a [wiki do repositório](https://github.com/ThiagoPanini/tf-modules-showcase/wiki).
+📚 O repositório foi pré configurado para lançar novas *releases* dos módulos construídos de forma automática através da *action* [terraform-module-releaser](https://github.com/techpivot/terraform-module-releaser).
+
+Para verificar as versões e todos os detalhes de documentação disponíveis, acesse a [wiki do repositório](https://github.com/ThiagoPanini/tf-modules-showcase/wiki).
 
 ## Entre em Contato
 
