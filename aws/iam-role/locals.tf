@@ -24,6 +24,4 @@ locals {
     for tpl in local.templates_filenames :
     split(".", tpl)[0] => "${local.policies_templates_destination_dir}/${tpl}"
   }
-
 }
-

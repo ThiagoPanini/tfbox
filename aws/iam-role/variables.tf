@@ -20,3 +20,19 @@ variable "policies_templates_vars" {
   description = "Variáveis e seus respectivos valores a serem substituídos nos templates de policies fornecidos."
   type        = map(string)
 }
+
+variable "existent_policies_arns" {
+  description = "ARNs de policies IAM já existentes a serem vinculadas na role criada através da chamada desde módulo."
+  type        = list(string)
+  default     = []
+}
+
+variable "role_name" {
+  description = "Nome da role IAM a ser criada."
+  type        = string
+}
+
+variable "trust_policy_path" {
+  description = "Caminho para o arquivo JSON que define a trust policy a ser associada à role."
+  type        = string
+}
