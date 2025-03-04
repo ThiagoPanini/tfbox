@@ -10,12 +10,12 @@ região.
 
 locals {
   # Definindo diretório de saída dos templates de policies
-  rendered_templates_dir             = "${var.policies_templates_source_dir}/../${basename(var.policies_templates_source_dir)}_rendered"
-  policies_templates_destination_dir = var.policies_templates_destination_dir == "" ? local.rendered_templates_dir : var.policies_templates_destination_dir
+  rendered_templates_dir             = "${var.policy_templates_source_dir}/../${basename(var.policy_templates_source_dir)}_rendered"
+  policies_templates_destination_dir = var.policy_templates_destination_dir == "" ? local.rendered_templates_dir : var.policy_templates_destination_dir
 
   # Obtendo lista de todos os templates resultantes filtrando apenas extensões permitidas
   templates_filenames = [
-    for file in fileset(var.policies_templates_source_dir, "**") :
+    for file in fileset(var.policy_templates_source_dir, "**") :
     file if lower(element(split(".", file), -1)) == "json" || lower(element(split(".", file), -1)) == "tpl"
   ]
 

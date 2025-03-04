@@ -8,9 +8,9 @@ criada com a chamada deste módulo
 
 # Renderizando templates de policies previamente definidos pelo usuário
 resource "template_dir" "policies_templates" {
-  source_dir      = var.policies_templates_source_dir
+  source_dir      = var.policy_templates_source_dir
   destination_dir = local.policies_templates_destination_dir
-  vars            = var.policies_templates_vars
+  vars            = var.policy_templates_vars
 }
 
 # Obtendo arquivos renderizados em data source que representa arquivos locais
