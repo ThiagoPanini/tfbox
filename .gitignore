@@ -1,5 +1,6 @@
 # Diretórios temporários de testes
 **tmp/
+**.ipynb
 
 # Local .terraform directories
 **/.terraform/*
