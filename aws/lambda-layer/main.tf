@@ -45,6 +45,6 @@ resource "aws_lambda_layer_version" "this" {
 
 /*
 ToDo:
-  - 
+  - Testar lógica para criação de layers através de map fornecido pelo usuário
 
 */
