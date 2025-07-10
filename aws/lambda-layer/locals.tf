@@ -8,7 +8,9 @@ exemplo, o ID da conta alvo de implantação ou o nome da
 região.
 -------------------------------------------------------- */
 
+/*
 locals {
+
   # Obtendo todos os arquivos no diretório fornecido para os layers
   all_files_in_layers_path = [
     for file in fileset(var.layers_source_code_dir, "**") : file
@@ -18,6 +20,15 @@ locals {
   zip_files_in_layers_path = [
     for file in local.all_files_in_layers_path : file
     if can(regex(".+\\.zip$", file))
+  ]
+
+  # Montando estrutura contendo informações do nome do layer e do path do zip extraídos do diretório
+  layers_input_params_from_dir = [
+    for file in local.zip_files_in_layers_path :
+    {
+      layer_name = trimsuffix(basename(file), ".zip")
+      filename   = "${var.layers_source_code_dir}/${file}"
+    }
   ]
 
   # Obtendo apenas o nome dos arquivos .zip (referência para nomear os layers)
@@ -30,10 +41,12 @@ locals {
     for file in local.zip_files_in_layers_path : "${var.layers_source_code_dir}/${file}"
   ]
 
+  # Gerando estrutura aninhada para
+
   # Montando estrutura com todas as informações dos layers
-  layers_info = {
+  layers_info_from_dir = {
     for path, name in zipmap(local.layers_source_code_paths, local.layers_names) :
-    path => {
+    "layer-${name}@${path}" => {
       layer_name               = name
       filename                 = path
       description              = "Layer ${name} criado para aprimorar o gerenciamento e o reuso de códigos entre funções Lambda"
@@ -43,9 +56,95 @@ locals {
     }
   }
 
+
+
+  # Montando estrutura com todas as informações dos layers
+  layers_info_from_details = {
+    for info in var.layers_input_params :
+    "layer-${info.layer_name}@${info.filename}" => {
+      layer_name               = info.layer_name
+      filename                 = info.filename
+      description              = contains(keys(info), "description") ? info.description : "Layer ${info.layer_name} criado para aprimorar o gerenciamento e o reuso de códigos entre funções Lambda."
+      compatible_architectures = contains(keys(info), "compatible_architectures") ? info.compatible_architectures : var.compatible_architectures
+      compatible_runtimes      = contains(keys(info), "compatible_runtimes") ? info.compatible_runtimes : var.compatible_runtimes
+      license_info             = contains(keys(info), "license_info") ? info.license_info : var.license_info
+    }
+  }
+
+  # Criando estrutura única para criação de layers com base em modo selecionado pelo usuário (dir ou details)
+  layers_info_details = var.flag_create_from_input ? var.layers_input_params : local.layers_input_params_from_dir
+
+  layers_info = {
+    for info in local.layers_info_details :
+    "layer-${info.layer_name}@${info.filename}" => {
+      layer_name               = info.layer_name
+      filename                 = info.filename
+      description              = contains(keys(info), "description") ? info.description : "Layer ${info.layer_name} criado para aprimorar o gerenciamento e o reuso de códigos entre funções Lambda."
+      compatible_architectures = contains(keys(info), "compatible_architectures") ? info.compatible_architectures : var.compatible_architectures
+      compatible_runtimes      = contains(keys(info), "compatible_runtimes") ? info.compatible_runtimes : var.compatible_runtimes
+      license_info             = contains(keys(info), "license_info") ? info.license_info : var.license_info
+    }
+  }
+
+}
+
+
+output "zipmap_teste" {
+  value = zipmap(local.layers_source_code_paths, local.layers_names)
+}
+
+output "layers_input_params" {
+  value = var.layers_input_params
+}
+
+output "layers_input_params_from_dir" {
+  value = local.layers_input_params_from_dir
 }
 
 output "layers_info" {
   value = local.layers_info
+}
+*/
+
+locals {
+  # Analisando condição para buscar arquivos .zip no diretório alvo de criação de layers
+  create_from_dir_condition = var.flag_create_from_dir && !var.flag_create_from_input && var.layers_source_code_dir != ""
+
+  # Obtendo todos os arquivos no diretório fornecido para os layers
+  all_files_in_layers_path = local.create_from_dir_condition ? [
+    for file in fileset(var.layers_source_code_dir, "**") : file
+  ] : []
+
+  # Filtrando apenas arquivos .zip
+  zip_files_in_layers_path = local.create_from_dir_condition ? [
+    for file in local.all_files_in_layers_path : file
+    if can(regex(".+\\.zip$", file))
+  ] : []
+
+  # Montando estrutura contendo informações do nome do layer e do path do zip extraídos do diretório
+  layers_input_params_from_dir = local.create_from_dir_condition ? [
+    for file in local.zip_files_in_layers_path :
+    {
+      layer_name = trimsuffix(basename(file), ".zip")
+      filename   = "${var.layers_source_code_dir}/${file}"
+    }
+  ] : []
+
+  # Validando qual objeto contendo os detalhes dos layers será utilizado para construção do map de criação
+  layers_info_details = var.flag_create_from_input ? var.layers_input_params : local.layers_input_params_from_dir
+
+  # Construindo estrutura única contendo todos os detalhes dos layers a serem criados
+  layers_info = {
+    for info in local.layers_info_details :
+    "layer-${info.layer_name}@${info.filename}" => {
+      layer_name               = info.layer_name
+      filename                 = info.filename
+      description              = contains(keys(info), "description") ? info.description : "Layer ${info.layer_name} criado para aprimorar o gerenciamento e o reuso de códigos entre funções Lambda."
+      compatible_architectures = contains(keys(info), "compatible_architectures") ? info.compatible_architectures : var.compatible_architectures
+      compatible_runtimes      = contains(keys(info), "compatible_runtimes") ? info.compatible_runtimes : var.compatible_runtimes
+      license_info             = contains(keys(info), "license_info") ? info.license_info : var.license_info
+    }
+  }
+
 }
 

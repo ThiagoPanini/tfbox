@@ -32,8 +32,9 @@ resource "aws_lambda_layer_version" "this" {
 }
 */
 
-resource "aws_lambda_layer_version" "this" {
-  for_each                 = var.flag_create_from_dir ? local.layers_info : {}
+# Instanciado apenas se var.flag_create_from_dir=true e var.flag_create_from_input=false
+resource "aws_lambda_layer_version" "from_dir" {
+  for_each                 = local.layers_info
   layer_name               = each.value.layer_name
   filename                 = each.value.filename
   description              = each.value.description
