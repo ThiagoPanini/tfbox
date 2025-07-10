@@ -1,28 +1,28 @@
-📑 **_Detalhes do Pull Request:_**
+📑 **_Pull Request Details:_**
 
-ToDo: forneça uma breve descrição sobre o PR aberto e garanta que os demais usuários interessados possam entender facilmente as alterações propostas.
+ToDo: provide a brief description about the opened PR and ensure that other interested users can easily understand the proposed changes.
 
 ___
 
-🔨 **_Atividades/features contempladas:_**
+🔨 **_Covered activities/features:_**
 
-- Atividade A
-- Melhoria B
+- Activity A
+- Enhancement B
 - ...
 
 ___
 
-🔗 **_Issues vinculadas_**
+🔗 **_Linked Issues_**
 
-Este PR eventualmente está atrelado às seguintes *issues*:
+This PR is eventually tied to the following *issues*:
 
-- [ ] Nenhuma *issue vinculada*
+- [ ] No *linked issues*
 - [ ] #
 
 ___
 
 ✅ **_Checklist:_**
 
-- [ ] As novas parcelas de código seguiram as boas práticas de desenvolvimento
-- [ ] Novas funcionalidades foram testadas adequadamente
-- [ ] Espera-se que as novas funcionalidades não comprometam a solução como um todo
+- [ ] The new code portions followed good development practices
+- [ ] New functionalities were adequately tested
+- [ ] New functionalities are expected not to compromise the solution as a whole

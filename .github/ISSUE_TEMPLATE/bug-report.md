@@ -1,51 +1,51 @@
 ---
 name: Bug Report
-about: Declaração de erros ou bugs envolvendo a biblioteca
+about: Declaration of errors or bugs involving the library
 title: "[BUG]"
 labels: bug
 assignees: ThiagoPanini
 
 ---
 
-✍️ **_Descrição do problema:_**
+✍️ **_Problem description:_**
 
-ToDo: proporcione uma visão clara do bug a ser reportado. Adicionalmente, insira blocos de código capazes de facilitar na identificação e reprodução do problema.
+ToDo: provide a clear view of the bug to be reported. Additionally, insert code blocks capable of facilitating the identification and reproduction of the problem.
 
 ```python
-# Insira seu código aqui
+# Insert your code here
 ```
 ___
 
-🐞 **_Reproduzindo o problema:_**
+🐞 **_Reproducing the problem:_**
 
-Para reproduzir o bug, siga os passos abaixo (exemplo):
+To reproduce the bug, follow the steps below (example):
 
-1. [ ] Importar o módulo ```package.module```
-2. [ ] Executar a função ```function()```
-3. [ ] Incluir os parâmetros ```(param_a='a', param_b='b')```
-4. [ ] Verificar os erros ```Exception e```
+1. [ ] Import the module ```package.module```
+2. [ ] Execute the function ```function()```
+3. [ ] Include the parameters ```(param_a='a', param_b='b')```
+4. [ ] Check the errors ```Exception e```
 ___
 
-⚙️ **_Comportamento esperado:_**
+⚙️ **_Expected behavior:_**
 
-ToDo: descreva o comportamento esperado pela função.
-
-___
-
-🌎 **_Informações adicionais:_**
-
-ToDo: se aplicável, forneça detalhes adicionais sobre o ambiente utilizado (por exemplo, o sistema operacional, versão da linguagem de programa, versão da biblioteca, entre outras).
+ToDo: describe the expected behavior of the function.
 
 ___
 
-📷 **_Screenshots:_** [OPCIONAL]
+🌎 **_Additional information:_**
 
-ToDo: se aplicável, forneça algumas capturas de tela para ajudar no entendimento do bug/problema
+ToDo: if applicable, provide additional details about the environment used (for example, operating system, programming language version, library version, among others).
 
 ___
 
-💬 **_Possíveis soluções:_** [OPCIONAL]
+📷 **_Screenshots:_** [OPTIONAL]
 
-Provavelmente soluções para o problema poderiam ser testadas através dos caminhos:
-- Tentativa A
-- Tentativa B
+ToDo: if applicable, provide some screenshots to help understand the bug/problem
+
+___
+
+💬 **_Possible solutions:_** [OPTIONAL]
+
+Probable solutions for the problem could be tested through the paths:
+- Attempt A
+- Attempt B

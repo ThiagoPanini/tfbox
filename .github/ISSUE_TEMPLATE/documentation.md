@@ -1,16 +1,16 @@
 ---
-name: Documentação
-about: Aprimoramento de Documentação
+name: Documentation
+about: Documentation Enhancement
 title: "[DOC]"
 labels: documentation
 assignees: ThiagoPanini
 
 ---
 
-📚 **_Aprimoramentos necessários:_**
+📚 **_Necessary enhancements:_**
 
-ToDo: Liste aqui seções, módulos, classes ou funções que precisam melhorar, corrigir ou até mesmo incluir documentações:
+ToDo: List here sections, modules, classes or functions that need to improve, correct or even include documentation:
 
-- Seção X
-- Módulo Y
-- Método Z da Classe W
+- Section X
+- Module Y
+- Method Z of Class W

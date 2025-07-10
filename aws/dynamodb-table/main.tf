@@ -1,8 +1,8 @@
 /* --------------------------------------------------------
-ARQUIVO: main.tf @ aws/dynamodb-table module
+FILE: main.tf @ aws/dynamodb-table module
 
-Definição e aplicação de regras necessárias para criação
-e implantação de uma tabela pré configurada no DynamoDB.
+Definition and application of necessary rules for creation
+and deployment of a pre-configured table in DynamoDB.
 -------------------------------------------------------- */
 
 resource "aws_dynamodb_table" "this" {

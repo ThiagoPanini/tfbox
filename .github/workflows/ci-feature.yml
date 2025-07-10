@@ -54,5 +54,5 @@ jobs:
           title: "pr(main): ${{ github.ref }} -> main"
           body-path: ".github/pull_request_template.md"
           labels: "github-bot 🤖"
-          commit-message: "bot: abertura automática de PR para branch main"
+          commit-message: "bot: automatic PR opening to main branch"
           
