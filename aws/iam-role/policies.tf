@@ -1,19 +1,19 @@
 /* --------------------------------------------------------
-ARQUIVO: policies.tf @ aws/iam module
+FILE: policies.tf @ aws/iam module
 
-Definição e gerenciamento de processos para declaração e
-implantação de policies IAM a serem vinculadas à role
-criada com a chamada deste módulo
+Definition and management of processes for declaration and
+deployment of IAM policies to be linked to the role
+created with this module call
 -------------------------------------------------------- */
 
-# Renderizando templates de policies previamente definidos pelo usuário
+# Rendering policy templates previously defined by the user
 resource "template_dir" "policies_templates" {
   source_dir      = var.policy_templates_source_dir
   destination_dir = local.policies_templates_destination_dir
   vars            = var.policy_templates_vars
 }
 
-# Obtendo arquivos renderizados em data source que representa arquivos locais
+# Obtaining rendered files in data source that represents local files
 data "local_file" "policies_files" {
   for_each = local.templates_filepaths
   filename = each.value
@@ -23,7 +23,7 @@ data "local_file" "policies_files" {
   ]
 }
 
-# Criando policies IAM para cada template disponibilizado
+# Creating IAM policies for each available template
 resource "aws_iam_policy" "policies" {
   for_each = data.local_file.policies_files
   name     = each.key

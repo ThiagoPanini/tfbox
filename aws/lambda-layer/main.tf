@@ -1,9 +1,9 @@
 /* --------------------------------------------------------
-ARQUIVO: main.tf @ aws/lambda-layer module
+FILE: main.tf @ aws/lambda-layer module
 
-Definição e aplicação de regras necessárias para criação
-e implantação de layers (e versões de layers) para funções
-Lambda na AWS
+Definition and application of necessary rules for creation
+and deployment of layers (and layer versions) for Lambda 
+functions on AWS
 -------------------------------------------------------- */
 
 /*
@@ -32,7 +32,7 @@ resource "aws_lambda_layer_version" "this" {
 }
 */
 
-# Instanciado apenas se var.flag_create_from_dir=true e var.flag_create_from_input=false
+# Instantiated only if var.flag_create_from_dir=true and var.flag_create_from_input=false
 resource "aws_lambda_layer_version" "from_dir" {
   for_each                 = local.layers_info
   layer_name               = each.value.layer_name
@@ -46,6 +46,6 @@ resource "aws_lambda_layer_version" "from_dir" {
 
 /*
 ToDo:
-  - Testar lógica para criação de layers através de map fornecido pelo usuário
+  - Test logic for creating layers through map provided by user
 
 */
