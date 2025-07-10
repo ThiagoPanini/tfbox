@@ -1,64 +1,64 @@
 /* --------------------------------------------------------
-ARQUIVO: variables.tf @ aws/lambda-layer module
+FILE: variables.tf @ aws/lambda-layer module
 
-Variáveis utilizadas no módulo aws/lambda-layer para
-definição, criação e configuração de layers (e versões) de
-layers a serem utilizados em funções Lambda na AWS
+Variables used in the aws/lambda-layer module for
+definition, creation and configuration of layers (and versions) of
+layers to be used in Lambda functions on AWS
 -------------------------------------------------------- */
 
 variable "flag_create_from_dir" {
-  description = "Flag para indicar se o(s) layer(s) será(ão) criado(s) através de arquivo(s) .zip disponibilizado(s) em um path específico passado pelo usuário."
+  description = "Flag to indicate if the layer(s) will be created through .zip file(s) available in a specific path provided by the user."
   type        = bool
   default     = true
 
   validation {
     condition     = var.flag_create_from_dir || var.flag_create_from_input
-    error_message = "Pelo menos um dos valores das variáveis var.flag_create_from_dir ou var.flag_create_from_input precisa ser verdadeiro. O usuário precisa escolher se deseja criar layer(s) através de arquivos .zip salvos em um diretório específico (var.flag_create_from_dir = true) ou se deseja criar layer(s) passando uma lista de maps de parâmetros com os detalhes do(s) layer(s) a ser(em) criado(s) diretamente para a chamada do módulo (var.flag_create_from_input = true)."
+    error_message = "At least one of the variable values var.flag_create_from_dir or var.flag_create_from_input needs to be true. The user needs to choose whether to create layer(s) through .zip files saved in a specific directory (var.flag_create_from_dir = true) or if they want to create layer(s) by passing a list of parameter maps with the details of the layer(s) to be created directly to the module call (var.flag_create_from_input = true)."
   }
 }
 
 variable "flag_create_from_input" {
-  description = "Flag para indicar se o(s) layer(s) será(ão) criado(s) através de um map (dicionário) passado pelo usuário contendo todas as informações do(s) layer(s)."
+  description = "Flag to indicate if the layer(s) will be created through a map (dictionary) passed by the user containing all information of the layer(s)."
   type        = bool
   default     = false
 }
 
 variable "compatible_architectures" {
-  description = "Lista contendo todas as arquitetras compatíveis para a versão do layer Lambda a ser criada."
+  description = "List containing all compatible architectures for the Lambda layer version to be created."
   type        = list(string)
   default     = ["arm64", "x86_64"]
 }
 
 variable "compatible_runtimes" {
-  description = "Lista contendo todos os runtimes compatíveis para a versão do layer a ser criada"
+  description = "List containing all compatible runtimes for the layer version to be created"
   type        = list(string)
 }
 
 variable "license_info" {
-  description = "Informações relacionadas a licença de software relacionada ao layer. Pode ser no formado de identificador SPDX (ex: MIT), uma URL que hospeda a licença (ex: https://opensource.org/licenses/MIT) ou então o texto completo da licença."
+  description = "Information related to software license related to the layer. Can be in SPDX identifier format (e.g.: MIT), a URL hosting the license (e.g.: https://opensource.org/licenses/MIT) or the full text of the license."
   type        = string
   default     = null
 }
 
 variable "layers_source_code_dir" {
-  description = "Diretório contendo todos os arquivos .zip a serem utilizados para a criação dos layers."
+  description = "Directory containing all .zip files to be used for creating layers."
   type        = string
   default     = ""
 
   validation {
     condition     = var.flag_create_from_input || (var.flag_create_from_dir && var.layers_source_code_dir != "")
-    error_message = "Quando var.flag_create_from_dir é igual a true e var.flag_create_from_input for igual a false, a variável var.layers_source_code_dir precisa ser explicitamente definida pelo usuário com um caminho de diretório onde os arquivos .zip dos layers a serem criados estão armazenados."
+    error_message = "When var.flag_create_from_dir is true and var.flag_create_from_input is false, the variable var.layers_source_code_dir needs to be explicitly defined by the user with a directory path where the .zip files of the layers to be created are stored."
   }
 }
 
 variable "layers_input_params" {
-  description = "Lista de map(s) (dicionário) contendo as informações necessárias para criação dos layers. Este dicionário pode conter todo os parâmetros aceitos pelo resource aws_lambda_layer_version (verificar documentação). O conteúdo desta variável é interpretado pelo módulo e utilizado como base para parametrização do resource aws_lambda_layer_version."
+  description = "List of map(s) (dictionary) containing the necessary information for creating layers. This dictionary can contain all parameters accepted by the aws_lambda_layer_version resource (check documentation). The content of this variable is interpreted by the module and used as basis for parameterization of the aws_lambda_layer_version resource."
   type        = list(map(string))
   default     = []
 
   validation {
     condition     = (var.flag_create_from_input && var.layers_input_params != [])
-    error_message = "Quando var.flag_create_from_input é igual a true, a variável var.layers_input_params precisa ser explicitamente definida pelo usuário com uma lista de maps contendo as informações do(s) layer(s) a ser(em) criado(s). ${var.flag_create_from_input && var.layers_input_params == []}"
+    error_message = "When var.flag_create_from_input is true, the variable var.layers_input_params needs to be explicitly defined by the user with a list of maps containing the information of the layer(s) to be created. ${var.flag_create_from_input && var.layers_input_params == []}"
   }
 }
 

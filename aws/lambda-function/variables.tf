@@ -1,8 +1,8 @@
 /* --------------------------------------------------------
-ARQUIVO: variables.tf @ aws/iam module
+FILE: variables.tf @ aws/lambda-function module
 
-Variáveis utilizadas no módulo aws/iam para definição,
-criação e configuração de policies e roles IAM de serviço.
+Variables used in the aws/lambda-function module for definition,
+creation and configuration of lambda function resources.
 -------------------------------------------------------- */
 
 variable "role_name" {

@@ -18,25 +18,25 @@
 </div>
 
 
-## Visão Geral
+## Overview
 
-A iniciativa **Terraform Modules Showcase** visa consolidar uma série de módulos Terraform criados mediante a necessidades reais de implantação de recursos em *cloud providers*.
+The **Terraform Modules Showcase** initiative aims to consolidate a series of Terraform modules created based on real needs for deploying resources in *cloud providers*.
 
-Em estudos ou situações práticas de trabalho envolvendo computação em nuvem, serviços precisam ser criados em *workspaces* para atender determinadas exigências de uma aplicação. Em muitos casos, a dinâmica de implementação de alguns desses serviços não envolve, necessariamente, a definição pura e individual de recursos Terraform.
+In studies or practical work situations involving cloud computing, services need to be created in *workspaces* to meet specific application requirements. In many cases, the implementation dynamics of some of these services do not necessarily involve the pure and individual definition of Terraform resources.
 
-Exemplificando em outras palavras, a devida implementação de um [Glue job](https://docs.aws.amazon.com/pt_br/glue/latest/dg/what-is-glue.html) na AWS dificilmente será alcançada apenas através da reclaração do recurso Terraform [aws_glue_job](https://registry.terraform.io/providers/hashicorp/aws/2.70.1/docs/resources/glue_job), mas também de outros recursos adicionais, como [aws_glue_security_configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/glue_security_configuration) para configurações de segurança do job ou até mesmo [aws_s3_bucket_object](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_object) para *upload* de *assets* utilizados no ETL.
+To illustrate with other words, the proper implementation of a [Glue job](https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html) on AWS can hardly be achieved only through the declaration of the Terraform resource [aws_glue_job](https://registry.terraform.io/providers/hashicorp/aws/2.70.1/docs/resources/glue_job), but also requires other additional resources, such as [aws_glue_security_configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/glue_security_configuration) for job security configurations or even [aws_s3_bucket_object](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_object) for uploading *assets* used in ETL.
 
-Inspirado pelo compilado de módulos Terraform disponível em [github/terraform-aws-modules](https://github.com/terraform-aws-modules) e, visando aprimorar os conhecimentos em modularização de recursos em Terraform, este repositório tem como objetivo consolidar diferentes módulos Terraform criados para atender as mais variadas necessidades práticas encontradas em experiências reais vividas nos mundos de Engenharia de Dados, Analytics e Plataforma.
+Inspired by the compilation of Terraform modules available at [github/terraform-aws-modules](https://github.com/terraform-aws-modules) and aiming to improve knowledge in Terraform resource modularization, this repository aims to consolidate different Terraform modules created to meet the most varied practical needs found in real experiences in the worlds of Data Engineering, Analytics and Platform.
 
-> 🚀 Sempre que um novo recurso precisar ser explorado a níveis de projetos pessoais ou corporativos, eventualmente a dinâmica prática de sua implementação será transformada em um novo módulo neste repositório.
+> 🚀 Whenever a new resource needs to be explored at personal or corporate project levels, eventually the practical dynamics of its implementation will be transformed into a new module in this repository.
 
-## Documentações dos Módulos
+## Module Documentation
 
-📚 O repositório foi pré configurado para lançar novas *releases* dos módulos construídos de forma automática através da *action* [terraform-module-releaser](https://github.com/techpivot/terraform-module-releaser).
+📚 The repository was pre-configured to launch new *releases* of the built modules automatically through the *action* [terraform-module-releaser](https://github.com/techpivot/terraform-module-releaser).
 
-Para verificar as versões e todos os detalhes de documentação disponíveis, acesse a [wiki do repositório](https://github.com/ThiagoPanini/tf-modules-showcase/wiki).
+To check versions and all available documentation details, access the [repository wiki](https://github.com/ThiagoPanini/tf-modules-showcase/wiki).
 
-## Entre em Contato
+## Get in Touch
 
 - GitHub: [@ThiagoPanini](https://github.com/ThiagoPanini)
 - LinkedIn: [Thiago Panini](https://www.linkedin.com/in/thiago-panini/)

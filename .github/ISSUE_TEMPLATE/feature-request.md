@@ -1,42 +1,42 @@
 ---
 name: Feature Request
-about: Requisição de novas funcionalidades
+about: Request for new functionalities
 title: "[FEATURE]"
 labels: feature
 assignees: ThiagoPanini
 
 ---
 
-🚀 **_Funcionalidade requerida:_**
+🚀 **_Required functionality:_**
 
-ToDo: forneça detalhes sobre as funcionalidades requeridas.
+ToDo: provide details about the required functionalities.
 
 ___
 
-🏆 **_Benefícios da nova funcionalidade:_**
+🏆 **_Benefits of the new functionality:_**
 
-Possíveis benefícios atrelados à nova funcionalidade
-* Aprimoramento...
-* Melhoria...
-* Garantia de que...
-* Aumento...
+Possible benefits linked to the new functionality
+* Enhancement...
+* Improvement...
+* Guarantee that...
+* Increase...
 * ...
 
 ___
 
-🧙‍♂️ **_Complexidade:_**
+🧙‍♂️ **_Complexity:_**
 
-- [ ] Extrema
-- [ ] Alta
-- [ ] Média
-- [ ] Baixa
+- [ ] Extreme
+- [ ] High
+- [ ] Medium
+- [ ] Low
 
 ___
 
-💡 **_Ideias de desenvolvimento:_** [OPCIONAL]
+💡 **_Development ideas:_** [OPTIONAL]
 
-Alguns caminhos promissores para o desenvolvimento desta nova funcionalidade seriam:
+Some promising paths for developing this new functionality would be:
 
-- Procurar por...
-- Aplicar...
-- Tentar...
+- Look for...
+- Apply...
+- Try...

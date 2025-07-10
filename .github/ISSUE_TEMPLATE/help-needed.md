@@ -1,21 +1,21 @@
 ---
 name: Help
-about: Ajuda Necessária
+about: Help Needed
 title: "[HELP]"
 labels: help wanted
 assignees: ''
 
 ---
 
-⚠️ **_Pedido de ajuda:_**
+⚠️ **_Help request:_**
 
-ToDo: descreva aqui o pedido de ajuda
+ToDo: describe the help request here
 
 ___
 
-✅ **_Checklist útil antes da oficialização do pedido:_**
+✅ **_Useful checklist before formalizing the request:_**
 
-- [ ] Eu já li a documentação do projeto
-- [ ] Já levantei a possibilidade de conflitos de ambiente, como sistema operacional, versão do Python, versão da biblioteca, entre outros
-- [ ] Já consumi as demonstrações das funcionalidades existentes na documentação
-- [ ] Já procurei por issues similares no repositório do projeto
+- [ ] I have already read the project documentation
+- [ ] I have already raised the possibility of environment conflicts, such as operating system, Python version, library version, among others
+- [ ] I have already consumed the demonstrations of existing functionalities in the documentation
+- [ ] I have already searched for similar issues in the project repository

@@ -1,11 +1,10 @@
 /* --------------------------------------------------------
-ARQUIVO: locals.tf @ aws/lambda-layer module
+FILE: locals.tf @ aws/lambda-layer module
 
-Arquivo responsável por declarar variáveis/valores locais
-capazes de auxiliar na obtenção de informações dinâmicas
-utilizadas durante a implantação do projeto, como por
-exemplo, o ID da conta alvo de implantação ou o nome da
-região.
+File responsible for declaring local variables/values
+capable of assisting in obtaining dynamic information
+used during project deployment, such as the target 
+deployment account ID or region name.
 -------------------------------------------------------- */
 
 /*
@@ -107,21 +106,21 @@ output "layers_info" {
 */
 
 locals {
-  # Analisando condição para buscar arquivos .zip no diretório alvo de criação de layers
+  # Analyzing condition to search for .zip files in target directory for layer creation
   create_from_dir_condition = var.flag_create_from_dir && !var.flag_create_from_input && var.layers_source_code_dir != ""
 
-  # Obtendo todos os arquivos no diretório fornecido para os layers
+  # Obtaining all files in the directory provided for layers
   all_files_in_layers_path = local.create_from_dir_condition ? [
     for file in fileset(var.layers_source_code_dir, "**") : file
   ] : []
 
-  # Filtrando apenas arquivos .zip
+  # Filtering only .zip files
   zip_files_in_layers_path = local.create_from_dir_condition ? [
     for file in local.all_files_in_layers_path : file
     if can(regex(".+\\.zip$", file))
   ] : []
 
-  # Montando estrutura contendo informações do nome do layer e do path do zip extraídos do diretório
+  # Building structure containing layer name and zip path information extracted from directory
   layers_input_params_from_dir = local.create_from_dir_condition ? [
     for file in local.zip_files_in_layers_path :
     {
@@ -130,16 +129,16 @@ locals {
     }
   ] : []
 
-  # Validando qual objeto contendo os detalhes dos layers será utilizado para construção do map de criação
+  # Validating which object containing layer details will be used for building the creation map
   layers_info_details = var.flag_create_from_input ? var.layers_input_params : local.layers_input_params_from_dir
 
-  # Construindo estrutura única contendo todos os detalhes dos layers a serem criados
+  # Building unique structure containing all details of layers to be created
   layers_info = {
     for info in local.layers_info_details :
     "layer-${info.layer_name}@${info.filename}" => {
       layer_name               = info.layer_name
       filename                 = info.filename
-      description              = contains(keys(info), "description") ? info.description : "Layer ${info.layer_name} criado para aprimorar o gerenciamento e o reuso de códigos entre funções Lambda."
+      description              = contains(keys(info), "description") ? info.description : "Layer ${info.layer_name} created to enhance management and code reuse between Lambda functions."
       compatible_architectures = contains(keys(info), "compatible_architectures") ? info.compatible_architectures : var.compatible_architectures
       compatible_runtimes      = contains(keys(info), "compatible_runtimes") ? info.compatible_runtimes : var.compatible_runtimes
       license_info             = contains(keys(info), "license_info") ? info.license_info : var.license_info

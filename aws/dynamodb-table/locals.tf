@@ -1,15 +1,14 @@
 /* --------------------------------------------------------
-ARQUIVO: locals.tf
+FILE: locals.tf
 
-Arquivo responsável por declarar variáveis/valores locais
-capazes de auxiliar na obtenção de informações dinâmicas
-utilizadas durante a implantação do projeto, como por
-exemplo, o ID da conta alvo de implantação ou o nome da
-região.
+File responsible for declaring local variables/values
+capable of assisting in obtaining dynamic information
+used during project deployment, such as the target 
+deployment account ID or region name.
 -------------------------------------------------------- */
 
 locals {
-  # Extraindo ID da conta e nome da região
+  # Extracting account ID and region name
   account_id  = data.aws_caller_identity.current.account_id
   region_name = data.aws_region.current.name
 }

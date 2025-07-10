@@ -1,38 +1,38 @@
 /* --------------------------------------------------------
-ARQUIVO: variables.tf @ aws/iam module
+FILE: variables.tf @ aws/iam module
 
-Variáveis utilizadas no módulo aws/iam para definição,
-criação e configuração de policies e roles IAM de serviço.
+Variables used in the aws/iam module for definition,
+creation and configuration of IAM service policies and roles.
 -------------------------------------------------------- */
 
 variable "role_name" {
-  description = "Nome da role IAM a ser criada."
+  description = "Name of the IAM role to be created."
   type        = string
 }
 
 variable "trust_policy_filepath" {
-  description = "Caminho para o arquivo JSON que define a trust policy a ser associada à role."
+  description = "Path to the JSON file that defines the trust policy to be associated with the role."
   type        = string
 }
 
 variable "policy_templates_source_dir" {
-  description = "Diretório de entrada contendo todos os templates definidos para criação das policies IAM."
+  description = "Input directory containing all templates defined for creating IAM policies."
   type        = string
 }
 
 variable "policy_templates_destination_dir" {
-  description = "Diretório de saída a ser utilizado para armazenar todos os arquivos de templates já renderizados após a substituição das variáveis. Se não passado de forma explícita, o diretório de saída dos templates será criado automaticamente pelo módulo no mesmo nível do caminho definido em var.policies_templates_source_dir"
+  description = "Output directory to be used to store all template files already rendered after variable substitution. If not passed explicitly, the template output directory will be automatically created by the module at the same level as the path defined in var.policies_templates_source_dir"
   type        = string
   default     = ""
 }
 
 variable "policy_templates_vars" {
-  description = "Variáveis e seus respectivos valores a serem substituídos nos templates de policies fornecidos."
+  description = "Variables and their respective values to be substituted in the provided policy templates."
   type        = map(string)
 }
 
 variable "existent_policy_arns" {
-  description = "ARNs de policies IAM já existentes a serem vinculadas na role criada através da chamada desde módulo."
+  description = "ARNs of existing IAM policies to be linked in the role created through this module call."
   type        = list(string)
   default     = []
 }

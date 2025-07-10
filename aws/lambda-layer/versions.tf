@@ -1,8 +1,8 @@
 /* --------------------------------------------------------
-ARQUIVO: versions.tf @ aws/dynamodb-table module
+FILE: versions.tf @ aws/lambda-layer module
 
-Configuração de versão do Terraform e do provider utilizado
-para implantação de recursos de infraestrutura do módulo.
+Configuration of Terraform version and provider used
+for deployment of module infrastructure resources.
 -------------------------------------------------------- */
 
 terraform {

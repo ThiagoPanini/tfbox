@@ -1,18 +1,18 @@
 /* --------------------------------------------------------
-ARQUIVO: role.tf @ aws/iam module
+FILE: role.tf @ aws/iam module
 
-Definição e gerenciamento de processos para declaração e
-implantação de uma role IAM.
+Definition and management of processes for declaration and
+deployment of an IAM role.
 -------------------------------------------------------- */
 
-# Definindo role com uma trust policy
+# Defining role with a trust policy
 resource "aws_iam_role" "this" {
   name                  = var.role_name
   assume_role_policy    = file(var.trust_policy_filepath)
   force_detach_policies = true
 }
 
-# Vinculando policies criadas no módulo à role
+# Linking policies created in the module to the role
 resource "aws_iam_role_policy_attachment" "inline_attachments" {
   for_each   = aws_iam_policy.policies
   role       = aws_iam_role.this.name
@@ -23,7 +23,7 @@ resource "aws_iam_role_policy_attachment" "inline_attachments" {
   ]
 }
 
-# Vinculando policies já existentes no módulo à role
+# Linking existing policies in the module to the role
 resource "aws_iam_role_policy_attachment" "existent_attachment" {
   for_each   = { for arn in var.existent_policy_arns : arn => arn }
   role       = aws_iam_role.this.name
