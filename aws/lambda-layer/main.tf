@@ -56,7 +56,7 @@ resource "null_resource" "build_layer" {
   }
 }
 
-# Creating an archive file for the layer
+# Creating an archive file for the layers
 data "archive_file" "layer_zip" {
   for_each    = null_resource.build_layer
   type        = "zip"
