@@ -1,9 +1,11 @@
-/* --------------------------------------------------------
-FILE: versions.tf @ aws/dynamodb-table module
+/* -----------------------------------------------------------------------------
+  FILE: versions.tf
+  MODULE: aws/dynamodb-table
 
-Configuration of Terraform version and provider used
-for deployment of module infrastructure resources.
--------------------------------------------------------- */
+  DESCRIPTION:
+    Configuration of Terraform version and provider used for deployment of
+    module infrastructure resources.
+----------------------------------------------------------------------------- */
 
 terraform {
   required_version = ">= 1.4"

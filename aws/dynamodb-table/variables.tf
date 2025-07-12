@@ -1,9 +1,13 @@
-/* --------------------------------------------------------
-FILE: variables.tf @ aws/dynamodb-table module
+/* -----------------------------------------------------------------------------
+  FILE: variables.tf
+  MODULE: aws/dynamodb-table
 
-Variables used in the aws/dynamodb-table module for
-definition and creation of tables in DynamoDB
--------------------------------------------------------- */
+  DESCRIPTION:
+    Variables for configuring DynamoDB table resources, including table name,
+    keys, attribute definitions, and billing mode. These variables enable
+    flexible and validated creation of DynamoDB tables within the
+    aws/dynamodb-table Terraform module.
+----------------------------------------------------------------------------- */
 
 variable "name" {
   description = "Name of the table to be created in DynamoDB"

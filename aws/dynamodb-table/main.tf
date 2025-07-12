@@ -1,9 +1,17 @@
-/* --------------------------------------------------------
-FILE: main.tf @ aws/dynamodb-table module
+/* -----------------------------------------------------------------------------
+  FILE: main.tf
+  MODULE: aws/dynamodb-table
 
-Definition and application of necessary rules for creation
-and deployment of a pre-configured table in DynamoDB.
--------------------------------------------------------- */
+  DESCRIPTION:
+    This Terraform module provisions an AWS DynamoDB table with configurable
+    attributes, billing mode, and key schema. The table's properties such as
+    name, billing mode, hash key, range key, and attribute definitions are
+    parameterized via input variables, allowing for flexible deployments.
+
+  RESOURCES:
+    - aws_dynamodb_table.this: Creates a DynamoDB table using the provided
+      configuration.
+----------------------------------------------------------------------------- */
 
 resource "aws_dynamodb_table" "this" {
   name         = var.name
