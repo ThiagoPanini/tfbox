@@ -31,12 +31,56 @@ jobs:
       - name: ✅ Terraform Validate
         run: terraform validate
         working-directory: aws/dynamodb-table
+  
+  ci-terraform-iam-role:
+    name: 🛠️ ci-terraform-iam-role
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔄 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⛏️ Terraform Setup
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.10.5
+
+      - name: 🍃 Terraform Init
+        run: terraform init
+        working-directory: aws/iam-role
+
+      - name: ✅ Terraform Validate
+        run: terraform validate
+        working-directory: aws/iam-role
+  
+  ci-terraform-lambda-layer:
+    name: 🛠️ ci-terraform-lambda-layer
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔄 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⛏️ Terraform Setup
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.10.5
+
+      - name: 🍃 Terraform Init
+        run: terraform init
+        working-directory: aws/lambda-layer
+
+      - name: ✅ Terraform Validate
+        run: terraform validate
+        working-directory: aws/lambda-layer
 
   release:
     name: 🚀 terraform-module-releaser
     runs-on: ubuntu-latest
     needs:
       - ci-terraform-dynamodb-table
+      - ci-terraform-iam-role
+      - ci-terraform-lambda-layer
     
     steps:
       - name: 🔄 Checkout
