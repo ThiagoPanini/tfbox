@@ -9,8 +9,8 @@
     parameterized via input variables, allowing for flexible deployments.
 
   RESOURCES:
-    - aws_dynamodb_table.this: Creates a DynamoDB table using the provided
-      configuration.
+    - aws_dynamodb_table.this:
+      Creates a DynamoDB table using the provided configuration.
 ----------------------------------------------------------------------------- */
 
 resource "aws_dynamodb_table" "this" {
