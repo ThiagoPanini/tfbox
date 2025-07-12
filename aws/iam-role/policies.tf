@@ -1,19 +1,35 @@
-/* --------------------------------------------------------
-FILE: policies.tf @ aws/iam module
+/* -----------------------------------------------------------------------------
+  FILE: policies.tf
+  MODULE: aws/iam-role
 
-Definition and management of processes for declaration and
-deployment of IAM policies to be linked to the role
-created with this module call
--------------------------------------------------------- */
+  DESCRIPTION:
+    This Terraform file manages the declaration, rendering, and deployment of
+    IAM policies to be associated with an IAM role. It automates the process of
+    rendering user-defined policy templates, loading the rendered files, and
+    creating AWS IAM policies from them.
 
-# Rendering policy templates previously defined by the user
+  RESOURCES:
+    - template_dir.policies_templates:
+      Renders IAM policy templates from a source directory using provided
+      variables, outputting them to a destination directory.
+
+    - data.local_file.policies_files:
+      Loads the rendered policy files as local data sources, enabling their
+      contents to be used in subsequent resources.
+
+    - aws_iam_policy.policies:
+      Creates AWS IAM policies for each rendered template file, using the
+      loaded file content as the policy document.
+----------------------------------------------------------------------------- */
+
+# Render IAM policy templates using user-defined variables
 resource "template_dir" "policies_templates" {
   source_dir      = var.policy_templates_source_dir
   destination_dir = local.policies_templates_destination_dir
   vars            = var.policy_templates_vars
 }
 
-# Obtaining rendered files in data source that represents local files
+# Load rendered policy files as local data sources
 data "local_file" "policies_files" {
   for_each = local.templates_filepaths
   filename = each.value
@@ -23,7 +39,7 @@ data "local_file" "policies_files" {
   ]
 }
 
-# Creating IAM policies for each available template
+# Create AWS IAM policies from each rendered template file
 resource "aws_iam_policy" "policies" {
   for_each = data.local_file.policies_files
   name     = each.key
@@ -34,4 +50,3 @@ resource "aws_iam_policy" "policies" {
     data.local_file.policies_files
   ]
 }
-

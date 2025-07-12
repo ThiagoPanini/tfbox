@@ -1,9 +1,11 @@
-/* --------------------------------------------------------
-FILE: versions.tf @ aws/iam-role module
+/* -----------------------------------------------------------------------------
+  FILE: versions.tf
+  MODULE: aws/iam-role
 
-Configuration of Terraform version and provider used
-for deployment of module infrastructure resources.
--------------------------------------------------------- */
+  DESCRIPTION:
+    Configuration of Terraform version and provider used for deployment of
+    module infrastructure resources.
+----------------------------------------------------------------------------- */
 
 terraform {
   required_version = ">= 1.4"

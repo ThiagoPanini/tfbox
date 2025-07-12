@@ -1,9 +1,13 @@
-/* --------------------------------------------------------
-FILE: variables.tf @ aws/iam module
+/* -----------------------------------------------------------------------------
+  FILE: variables.tf
+  MODULE: aws/iam-role
 
-Variables used in the aws/iam module for definition,
-creation and configuration of IAM service policies and roles.
--------------------------------------------------------- */
+  DESCRIPTION:
+    Variables for configuring IAM role resources, including role name, trust
+    policy, policy template directories, template variables, and existing policy
+    ARNs. These variables enable flexible and validated creation of IAM roles
+    and associated policies within the aws/iam-role Terraform module.
+----------------------------------------------------------------------------- */
 
 variable "role_name" {
   description = "Name of the IAM role to be created."
@@ -36,7 +40,3 @@ variable "existent_policy_arns" {
   type        = list(string)
   default     = []
 }
-
-
-
-
