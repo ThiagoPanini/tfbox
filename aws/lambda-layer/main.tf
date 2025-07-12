@@ -1,51 +1,107 @@
-/* --------------------------------------------------------
-FILE: main.tf @ aws/lambda-layer module
+/* -----------------------------------------------------------------------------
+  FILE: main.tf
+  MODULE: aws/lambda-layer
 
-Definition and application of necessary rules for creation
-and deployment of layers (and layer versions) for Lambda 
-functions on AWS
--------------------------------------------------------- */
+  DESCRIPTION:
+    This Terraform module creates AWS Lambda layers based on the provided
+    configuration. It builds the layers from specified Python requirements,
+    packages them into zip files, and deploys them as Lambda layer versions.
+    The module supports cleanup of temporary build directories after layer creation.
 
-/*
+  RESOURCES:
+    - null_resource.build_layer:
+      Builds the layer by installing Python packages into a specified directory.
+    
+    - data.archive_file.layer_zip:
+      Creates a zip archive of the built layer directory.
+    
+    - aws_lambda_layer_version.this:
+      Deploys the zipped layer as a Lambda layer version.
+    
+    - null_resource.cleanup_layer_build:
+      Cleans up temporary build directories and zip files after the layer is
+      created, if the cleanup option is enabled.
+----------------------------------------------------------------------------- */
+
+# Declaring a null resource to build layers during module call
+resource "null_resource" "build_layer" {
+  for_each = var.layers_info
+
+  # Defining triggers to ensure the resource is recreated when layer configurations change
+  triggers = {
+    python_requirements_hash = sha1(join(",", each.value.python_requirements))
+    runtime                  = each.value.runtime
+  }
+
+  # Using a local-exec provisioner to run commands for building the layer
+  provisioner "local-exec" {
+    command     = <<-EOT
+      # Ensuring the script fails on any error and treats unset variables as errors
+      set -euo pipefail
+      WORK="${local.layers_mount_point}/${each.key}"
+      rm -rf "$WORK"
+      mkdir -p "$WORK/python"
+
+      # Creating a temporary requirements.txt file from the provided Python requirements
+      printf "%s\n" ${join(" ", each.value.python_requirements)} > "$WORK/req.txt"
+
+      # Upgrading pip and installing the Python packages into the layer's directory
+      python -m pip install --upgrade pip
+      pip install -r "$WORK/req.txt" --target "$WORK/python"
+
+      # Ensuring determinism by removing cache files
+      find "$WORK/python" -type f -name '*.pyc' -delete
+    EOT
+    interpreter = ["/bin/bash", "-c"]
+  }
+}
+
+# Creating an archive file for the layer
+data "archive_file" "layer_zip" {
+  for_each    = null_resource.build_layer
+  type        = "zip"
+  source_dir  = "${local.layers_mount_point}/${each.key}"
+  output_path = "${local.layers_mount_point}/${each.key}.zip"
+
+  depends_on = [
+    null_resource.build_layer
+  ]
+}
+
+# Creating the AWS Lambda layer version from the zipped archive
 resource "aws_lambda_layer_version" "this" {
-  layer_name  = var.layer_name
-  description = var.layer_description
+  for_each = data.archive_file.layer_zip
 
-  compatible_architectures = var.layer_compatible_architectures
-  compatible_runtimes      = var.layer_compatible_runtimes
+  filename                 = each.value.output_path
+  layer_name               = each.key
+  description              = lookup(var.layers_info[each.key], "description", null)
+  compatible_runtimes      = [var.layers_info[each.key].runtime]
+  compatible_architectures = lookup(var.layers_info[each.key], "compatible_architectures", null)
 
-  license_info = var.layer_license_info
-
-  filename = var.layer_zip_filepath
-
-  s3_bucket         = var.layer_s3_bucket
-  s3_key            = var.layer_s3_object_key
-  s3_object_version = var.layer_s3_object_version
-}
-*/
-
-/*
-resource "aws_lambda_layer_version" "this" {
-  for_each   = local.layers_info
-  layer_name = each.value.layer_name
-  filename   = each.value.layer_filename
-}
-*/
-
-# Instantiated only if var.flag_create_from_dir=true and var.flag_create_from_input=false
-resource "aws_lambda_layer_version" "from_dir" {
-  for_each                 = local.layers_info
-  layer_name               = each.value.layer_name
-  filename                 = each.value.filename
-  description              = each.value.description
-  compatible_runtimes      = each.value.compatible_runtimes
-  compatible_architectures = each.value.compatible_architectures
-  license_info             = each.value.license_info
+  # Ensuring the layer is created before destroying the old version to avoid downtime
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
+# Cleaning up temporary build directories and zip files after layer creation if cleanup is enabled
+resource "null_resource" "cleanup_layer_build" {
+  for_each = var.cleanup_after_build ? aws_lambda_layer_version.this : {}
 
-/*
-ToDo:
-  - Test logic for creating layers through map provided by user
+  # Local-exec provisioner to remove temporary build directory and zip file
+  provisioner "local-exec" {
+    command     = "rm -rf ${local.layers_mount_point}/${each.key} ${local.layers_mount_point}/${each.key}.zip"
+    interpreter = ["/bin/bash", "-c"]
+  }
 
-*/
+  # This makes the resource run every time Terraform applies
+  triggers = {
+    always_run = timestamp()
+  }
+
+  # Ensure cleanup only happens after the layer is created
+  depends_on = [
+    aws_lambda_layer_version.this
+  ]
+}
+
