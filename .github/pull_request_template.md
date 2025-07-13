@@ -5,15 +5,6 @@ _A concise summary of the changes, motivations, and context. What problem does i
 
 ---
 
-## 🔨 Changes & Features
-
-**Main activities and enhancements included:**
-- [ ] Activity/Feature 1
-- [ ] Activity/Feature 2
-- [ ] ...
-
----
-
 ## 🔗 Related Issues
 
 **Does this PR address any existing issues?**
