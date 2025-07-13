@@ -1,44 +1,86 @@
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/tf-modules-showcase/blob/main/docs/logo.png?raw=true" width=200 alt="tf-modules-showcase-logo">
+    <br><img src="https://github.com/ThiagoPanini/tf-modules-showcase/blob/feature/lambda-layer-module/docs/logo-tfbox.png?raw=true" width=200 alt="tf-modules-showcase-logo">
 </div>
 
 <div align="center">
 
   <a href="https://www.terraform.io/">
-    <img src="https://img.shields.io/badge/terraform-grey?style=for-the-badge&logo=terraform&logoColor=B252D0">
+    <img src="https://img.shields.io/badge/terraform-grey?style=for-the-badge&logo=terraform&logoColor=FFFFFF">
   </a>
 
-  <a href="https://aws.amazon.com/">
-    <img src="https://img.shields.io/badge/aws-grey?style=for-the-badge&logo=amazon-web-services&logoColor=B252D0">
+  <a href="https://www.hashicorp.com/">
+    <img src="https://img.shields.io/badge/hashicorp-grey?style=for-the-badge&logo=hashicorp&logoColor=FFFFFF">
   </a>
 
   <a href="https://github.com/">
-    <img src="https://img.shields.io/badge/github-grey?style=for-the-badge&logo=github&logoColor=B252D0">
+    <img src="https://img.shields.io/badge/github-grey?style=for-the-badge&logo=github&logoColor=FFFFFF">
+  </a>
+
+  <a href="https://github.com/copilot">
+    <img src="https://img.shields.io/badge/copilot-grey?style=for-the-badge&logo=githubcopilot&logoColor=FFFFFF">
   </a>
 </div>
 
+# tfbox: Terraform AWS Modules Collection
 
-## Overview
+**tfbox** is a curated collection of reusable [Terraform](https://www.terraform.io/) modules for AWS infrastructure, designed to simplify and standardize cloud resource provisioning. Each module is self-contained, documented, and ready to integrate into your Terraform workflows.
 
-The **Terraform Modules Showcase** initiative aims to consolidate a series of Terraform modules created based on real needs for deploying resources in *cloud providers*.
+## Modules Included
 
-In studies or practical work situations involving cloud computing, services need to be created in *workspaces* to meet specific application requirements. In many cases, the implementation dynamics of some of these services do not necessarily involve the pure and individual definition of Terraform resources.
+- **DynamoDB Table**  
+  Flexible provisioning of DynamoDB tables with configurable keys, attributes, and billing modes.
 
-To illustrate with other words, the proper implementation of a [Glue job](https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html) on AWS can hardly be achieved only through the declaration of the Terraform resource [aws_glue_job](https://registry.terraform.io/providers/hashicorp/aws/2.70.1/docs/resources/glue_job), but also requires other additional resources, such as [aws_glue_security_configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/glue_security_configuration) for job security configurations or even [aws_s3_bucket_object](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_object) for uploading *assets* used in ETL.
+- **IAM Role**  
+  Automated creation of IAM roles, trust policies, and attachment of inline or existing policies using template-driven workflows.
 
-Inspired by the compilation of Terraform modules available at [github/terraform-aws-modules](https://github.com/terraform-aws-modules) and aiming to improve knowledge in Terraform resource modularization, this repository aims to consolidate different Terraform modules created to meet the most varied practical needs found in real experiences in the worlds of Data Engineering, Analytics and Platform.
+- **Lambda Layer**  
+  Build and deploy AWS Lambda layers from Python requirements, with automated packaging and cleanup.
 
-> 🚀 Whenever a new resource needs to be explored at personal or corporate project levels, eventually the practical dynamics of its implementation will be transformed into a new module in this repository.
 
-## Module Documentation
+>[!IMPORTANT]
+> All relevant information about every module in this repository, including input variables, outputs, usage examples, and documentation, is available on the repository's [Wiki](https://github.com/ThiagoPanini/tfbox/wiki) page. 
 
-📚 The repository was pre-configured to launch new *releases* of the built modules automatically through the *action* [terraform-module-releaser](https://github.com/techpivot/terraform-module-releaser).
+## Repository Structure
 
-To check versions and all available documentation details, access the [repository wiki](https://github.com/ThiagoPanini/tf-modules-showcase/wiki).
+```
+aws/
+  dynamodb-table/
+  iam-role/
+  lambda-layer/
+```
 
-## Get in Touch
+Each subdirectory contains a standalone Terraform module with its own variables, resources, and documentation.
+
+## Usage
+
+To use a module, reference it in your Terraform configuration using the GitHub repository URL and the desired version tag:
+
+```hcl
+module "dynamodb_table" {
+  source  = "git::https://github.com/ThiagoPanini/tfbox.git//aws/dynamodb-table?ref=v1.0.0"
+  # ...module variables...
+}
+```
+
+Replace `v1.0.0` with the desired module version.
+
+## Automated Module Versioning
+
+This repository uses the [terraform-module-releaser](https://github.com/marketplace/actions/terraform-module-releaser) GitHub Action to automatically release and version Terraform modules. When changes are merged, new module versions are published and all relevant documentation is updated on the [Wiki](https://github.com/ThiagoPanini/tfbox/wiki) page.
+
+## Contributing
+
+Contributions are welcome! Please open issues or pull requests to suggest improvements, new modules, or bug fixes.
+
+## Get In Touch
 
 - GitHub: [@ThiagoPanini](https://github.com/ThiagoPanini)
 - LinkedIn: [Thiago Panini](https://www.linkedin.com/in/thiago-panini/)
 - Hashnode: [panini-tech-lab](https://panini.hashnode.dev/)
 - DevTo: [thiagopanini](https://dev.to/thiagopanini)
+
+---
+
+<div align="center">
+  <sub>Built with ❤️ using Terraform and GitHub Actions</sub>
+</div>

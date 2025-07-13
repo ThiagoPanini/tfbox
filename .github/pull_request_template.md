@@ -1,28 +1,28 @@
-📑 **_Pull Request Details:_**
+## 📑 Pull Request Overview
 
-ToDo: provide a brief description about the opened PR and ensure that other interested users can easily understand the proposed changes.
+**Describe the purpose of this PR:**  
+_A concise summary of the changes, motivations, and context. What problem does it solve?_
 
-___
+---
 
-🔨 **_Covered activities/features:_**
+## 🔗 Related Issues
 
-- Activity A
-- Enhancement B
-- ...
+**Does this PR address any existing issues?**
+- [ ] No linked issues
+- [ ] Closes #
 
-___
+---
 
-🔗 **_Linked Issues_**
+## ✅ Pre-Merge Checklist
 
-This PR is eventually tied to the following *issues*:
+- [ ] Code follows project conventions and best practices
+- [ ] All new features are covered by tests
+- [ ] Documentation is updated (if applicable)
+- [ ] No breaking changes introduced
+- [ ] All CI checks pass
 
-- [ ] No *linked issues*
-- [ ] #
+---
 
-___
+## 📋 Additional Notes
 
-✅ **_Checklist:_**
-
-- [ ] The new code portions followed good development practices
-- [ ] New functionalities were adequately tested
-- [ ] New functionalities are expected not to compromise the solution as a whole
+_Optional: Add any extra information, screenshots, or references relevant to this PR._
