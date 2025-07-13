@@ -1,5 +1,5 @@
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/tf-modules-showcase/blob/feature/lambda-layer-module/docs/logo-tfbox.png?raw=true" width=200 alt="tf-modules-showcase-logo">
+    <br><img src="https://github.com/ThiagoPanini/tf-modules-showcase/blob/main/docs/logo-tfbox.png?raw=true" width=200 alt="tf-modules-showcase-logo">
 </div>
 
 <div align="center">
