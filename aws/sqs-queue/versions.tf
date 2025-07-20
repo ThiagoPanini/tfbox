@@ -1,11 +1,12 @@
 /* -----------------------------------------------------------------------------
   FILE: versions.tf
-  MODULE: aws/lambda-layer
+  MODULE: aws/sqs-queue
 
   DESCRIPTION:
     Configuration of Terraform version and provider used for deployment of
     module infrastructure resources.
 ----------------------------------------------------------------------------- */
+
 terraform {
   required_version = ">= 1.9"
 
