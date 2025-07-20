@@ -1,4 +1,4 @@
-# Building Modular AWS Infrastructure with Terraform: Inside the `tfbox` Repository
+# Building Modular AWS Infrastructure with Terraform: Inside the tfbox Project
 
 ## Introduction
 
