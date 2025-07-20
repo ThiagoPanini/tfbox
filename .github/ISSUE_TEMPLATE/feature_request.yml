@@ -1,6 +1,6 @@
 name: Feature Request
 description: Suggest an idea for this project
-title: "[Feature]: "
+title: "[FEATURE] "
 labels: ["enhancement", "feature-request"]
 assignees: []
 body:
@@ -12,7 +12,7 @@ body:
   - type: textarea
     id: problem-description
     attributes:
-      label: Is your feature request related to a problem?
+      label: ⛔ Is your feature request related to a problem?
       description: A clear and concise description of what the problem is
       placeholder: I'm always frustrated when...
     validations:
@@ -21,7 +21,7 @@ body:
   - type: textarea
     id: solution-description
     attributes:
-      label: Describe the solution you'd like
+      label: ⚙️ Describe the solution you'd like
       description: A clear and concise description of what you want to happen
       placeholder: I would like to see...
     validations:
@@ -30,14 +30,14 @@ body:
   - type: textarea
     id: alternatives
     attributes:
-      label: Describe alternatives you've considered
+      label: 💭 Describe alternatives you've considered
       description: A clear and concise description of any alternative solutions or features you've considered
       placeholder: I have considered...
 
   - type: dropdown
     id: feature-type
     attributes:
-      label: What type of feature is this?
+      label: 🛠️ What type of feature is this?
       description: Select the category that best describes your feature request
       options:
         - Data Processing
@@ -53,27 +53,27 @@ body:
   - type: dropdown
     id: priority
     attributes:
-      label: Priority
+      label: ⚠️ Priority
       description: How important is this feature to you?
       options:
-        - Low
-        - Medium
-        - High
-        - Critical
+        - 🟢 Low
+        - 🟡 Medium
+        - 🟠 High
+        - 🔴 Critical
     validations:
       required: true
 
   - type: textarea
     id: additional-context
     attributes:
-      label: Additional context
+      label: 📑 Additional context
       description: Add any other context, screenshots, or examples about the feature request here
       placeholder: Any additional information that might help...
 
   - type: checkboxes
     id: terms
     attributes:
-      label: Code of Conduct
+      label: 🛡️ Code of Conduct
       description: By submitting this issue, you agree to follow our Code of Conduct
       options:
         - label: I agree to follow this project's Code of Conduct

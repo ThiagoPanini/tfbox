@@ -1,5 +1,5 @@
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/tf-modules-showcase/blob/main/docs/logo-tfbox.png?raw=true" width=200 alt="tf-modules-showcase-logo">
+    <br><img src="https://github.com/ThiagoPanini/tf-modules-showcase/blob/main/docs/imgs/logo-tfbox.png?raw=true" width=200 alt="tf-modules-showcase-logo">
 </div>
 
 <div align="center">
@@ -74,10 +74,20 @@ Contributions are welcome! Please open issues or pull requests to suggest improv
 
 ## Get In Touch
 
-- GitHub: [@ThiagoPanini](https://github.com/ThiagoPanini)
-- LinkedIn: [Thiago Panini](https://www.linkedin.com/in/thiago-panini/)
-- Hashnode: [panini-tech-lab](https://panini.hashnode.dev/)
-- DevTo: [thiagopanini](https://dev.to/thiagopanini)
+<p align="left">
+  <a href="https://www.linkedin.com/in/thiago-panini/">
+    <img alt="LinkedIn" title="LinkedIn" src="https://custom-icon-badges.demolab.com/badge/-LinkedIn-0077B5?style=for-the-badge&logo=in&logoColor=white"/>
+  </a>
+  <a href="https://panini.hashnode.dev/">
+    <img alt="Hashnode" title="Hashnode" src="https://custom-icon-badges.demolab.com/badge/-Hashnode-2962FF?style=for-the-badge&logo=hashnode&logoColor=white"/>
+  </a>
+  <a href="https://builder.aws.com/community/@thipanini">
+    <img alt="AWS Builder" title="AWS Builder" src="https://custom-icon-badges.demolab.com/badge/AWS%20Builder-FF9900?style=for-the-badge&logo=aws&logoColor=white"/>
+  </a>
+  <a href="https://dev.to/thiagopanini">
+    <img alt="Dev.to" title="Dev.to" src="https://custom-icon-badges.demolab.com/badge/-Dev.to-0A0A0A?style=for-the-badge&logo=dev.to&logoColor=white"/>
+  </a>
+</p>
 
 ---
 
