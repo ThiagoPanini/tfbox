@@ -36,6 +36,8 @@
 - **Lambda Layer**  
   Build and deploy AWS Lambda layers from Python requirements, with automated packaging and cleanup.
 
+- **SQS Queue**  
+  Easy provisioning of AWS SQS queues with configurable settings, access policies, and dead-letter queue support.
 
 >[!IMPORTANT]
 > All relevant information about every module in this repository, including input variables, outputs, usage examples, and documentation, is available on the repository's [Wiki](https://github.com/ThiagoPanini/tfbox/wiki) page. 
@@ -47,6 +49,7 @@ aws/
   dynamodb-table/
   iam-role/
   lambda-layer/
+  sqs-queue/
 ```
 
 Each subdirectory contains a standalone Terraform module with its own variables, resources, and documentation.
