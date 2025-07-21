@@ -20,19 +20,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🔄 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: ⛏️ Terraform Setup
+      - name: Terraform Setup
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.10.5
 
-      - name: 🍃 Terraform Init
+      - name: Terraform Init
         run: terraform init
         working-directory: aws/dynamodb-table
 
-      - name: ✅ Terraform Validate
+      - name: Terraform Validate
         run: terraform validate
         working-directory: aws/dynamodb-table
   
@@ -41,19 +41,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🔄 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: ⛏️ Terraform Setup
+      - name: Terraform Setup
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.10.5
 
-      - name: 🍃 Terraform Init
+      - name: Terraform Init
         run: terraform init
         working-directory: aws/iam-role
 
-      - name: ✅ Terraform Validate
+      - name: Terraform Validate
         run: terraform validate
         working-directory: aws/iam-role
   
@@ -62,21 +62,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🔄 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: ⛏️ Terraform Setup
+      - name: Terraform Setup
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.10.5
 
-      - name: 🍃 Terraform Init
+      - name: Terraform Init
         run: terraform init
         working-directory: aws/lambda-layer
 
-      - name: ✅ Terraform Validate
+      - name: Terraform Validate
         run: terraform validate
         working-directory: aws/lambda-layer
+  
+  ci-terraform-sqs-queue:
+    name: 🛠️ ci-terraform-sqs-queue
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Terraform Setup
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.10.5
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: aws/sqs-queue
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: aws/sqs-queue
 
   open-pr-to-main:
     name: 🔓 open-pr-to-main
@@ -85,9 +106,10 @@ jobs:
       - ci-terraform-dynamodb-table
       - ci-terraform-iam-role
       - ci-terraform-lambda-layer
+      - ci-terraform-sqs-queue
 
     steps:
-      - name: 🔄 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: 🔓 PR to main
