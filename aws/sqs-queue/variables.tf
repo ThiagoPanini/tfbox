@@ -186,6 +186,12 @@ variable "max_receive_count" {
   default     = 5
 }
 
+variable "copy_dlq_config_from_source_queue" {
+  description = "Whether to copy the source queue's configuration to the dead-letter queue. If true, the DLQ will inherit the source queue's settings such as visibility timeout, message retention, etc. If false, users need to configure DLQ settings separately through variables provided."
+  type        = bool
+  default     = false
+}
+
 variable "dlq_visibility_timeout_seconds" {
   description = "The visibility timeout for the queue (in seconds). Visibility timeout sets the length of time that a message received from a queue (by one consumer) will not be visible to the other message consumers."
   type        = number

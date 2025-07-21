@@ -61,17 +61,17 @@ resource "aws_sqs_queue" "dlq" {
 
   # Common queue configuration (either standard or FIFO)
   name                       = var.create_fifo_queue ? "${var.name}-dlq.fifo" : "${var.name}-dlq"
-  visibility_timeout_seconds = var.dlq_visibility_timeout_seconds
-  message_retention_seconds  = var.dlq_message_retention_seconds
-  delay_seconds              = var.dlq_delay_seconds
-  max_message_size           = var.dlq_max_message_size
-  receive_wait_time_seconds  = var.dlq_receive_wait_time_seconds
+  visibility_timeout_seconds = var.copy_dlq_config_from_source_queue ? var.visibility_timeout_seconds : var.dlq_visibility_timeout_seconds
+  message_retention_seconds  = var.copy_dlq_config_from_source_queue ? var.message_retention_seconds : var.dlq_message_retention_seconds
+  delay_seconds              = var.copy_dlq_config_from_source_queue ? var.delay_seconds : var.dlq_delay_seconds
+  max_message_size           = var.copy_dlq_config_from_source_queue ? var.max_message_size : var.dlq_max_message_size
+  receive_wait_time_seconds  = var.copy_dlq_config_from_source_queue ? var.receive_wait_time_seconds : var.dlq_receive_wait_time_seconds
 
   # If source queue is FIFO, DLQ must also be FIFO
   fifo_queue                  = var.create_fifo_queue
-  content_based_deduplication = var.create_fifo_queue ? var.dlq_content_based_deduplication : null
-  deduplication_scope         = var.create_fifo_queue ? var.dlq_deduplication_scope : null
-  fifo_throughput_limit       = var.create_fifo_queue ? var.dlq_fifo_throughput_limit : null
+  content_based_deduplication = !var.create_fifo_queue ? null : var.copy_dlq_config_from_source_queue ? var.content_based_deduplication : var.dlq_content_based_deduplication
+  deduplication_scope         = !var.create_fifo_queue ? null : var.copy_dlq_config_from_source_queue ? var.deduplication_scope : var.dlq_deduplication_scope
+  fifo_throughput_limit       = !var.create_fifo_queue ? null : var.copy_dlq_config_from_source_queue ? var.fifo_throughput_limit : var.dlq_fifo_throughput_limit
 
   # Encryption configuration (conditions are applied to avoid conflicts in Terraform configuration)
   sqs_managed_sse_enabled           = var.sqs_managed_sse_enabled ? true : null
