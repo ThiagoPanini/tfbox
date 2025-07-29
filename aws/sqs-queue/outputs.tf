@@ -24,5 +24,5 @@ output "queue_url" {
 
 output "dlq_arn" {
   description = "ARN of the dead-letter queue, if created."
-  value       = try(aws_sqs_queue.dlq.arn, null)
+  value       = try(aws_sqs_queue.dlq[0].arn, null)
 }
