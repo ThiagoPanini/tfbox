@@ -40,3 +40,9 @@ variable "existent_policy_arns" {
   type        = list(string)
   default     = []
 }
+
+variable "tags" {
+  description = "Tags to apply to the IAM role."
+  type        = map(string)
+  default     = {}
+}

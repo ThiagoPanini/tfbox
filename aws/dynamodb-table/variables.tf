@@ -50,3 +50,9 @@ variable "billing_mode" {
     error_message = "The variable value must be 'PROVISIONED' or 'PAY_PER_REQUEST'."
   }
 }
+
+variable "tags" {
+  description = "Tags to apply to the DynamoDB table."
+  type        = map(string)
+  default     = {}
+}

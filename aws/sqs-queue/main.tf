@@ -53,6 +53,8 @@ resource "aws_sqs_queue" "source" {
     deadLetterTargetArn = aws_sqs_queue.dlq[0].arn,
     maxReceiveCount     = var.max_receive_count
   }) : null
+
+  tags = var.tags
 }
 
 # Dead-letter queue resource
@@ -77,6 +79,8 @@ resource "aws_sqs_queue" "dlq" {
   sqs_managed_sse_enabled           = var.sqs_managed_sse_enabled ? true : null
   kms_master_key_id                 = var.sqs_managed_sse_enabled ? null : var.kms_master_key_id
   kms_data_key_reuse_period_seconds = var.sqs_managed_sse_enabled ? null : var.kms_data_key_reuse_period_seconds
+
+  tags = var.tags
 }
 
 # Redrive allow policy for DLQ

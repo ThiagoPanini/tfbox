@@ -35,4 +35,3 @@ variable "cleanup_after_build" {
   type        = bool
   default     = true
 }
-
