@@ -169,6 +169,12 @@ variable "access_policy_file_path" {
   }
 }
 
+variable "tags" {
+  description = "Tags to apply to the SQS queue(s)."
+  type        = map(string)
+  default     = {}
+}
+
 
 /* --------------------------------
   DEAD-LETTER QUEUE VARIABLES

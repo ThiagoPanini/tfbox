@@ -27,6 +27,7 @@ resource "aws_iam_role" "this" {
   name                  = var.role_name
   assume_role_policy    = file(var.trust_policy_filepath)
   force_detach_policies = true
+  tags                  = var.tags
 }
 
 # Attach inline policies created within the module to the IAM role
