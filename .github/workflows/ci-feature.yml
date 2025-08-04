@@ -149,6 +149,8 @@ jobs:
       - ci-terraform-iam-role
       - ci-terraform-lambda-layer
       - ci-terraform-sqs-queue
+      - ci-terraform-sns-topic
+      - ci-terraform-lambda-function
 
     steps:
       - name: Checkout
