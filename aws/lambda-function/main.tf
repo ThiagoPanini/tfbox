@@ -17,6 +17,7 @@
 
 # Build Lambda deployment package (zip) from source_path
 resource "null_resource" "zip_lambda_package" {
+
   provisioner "local-exec" {
     command = "cd ${local.source_dir_parent} && zip -r ${local.output_zip} ${local.source_dir_name}"
   }
@@ -52,7 +53,6 @@ resource "null_resource" "cleanup_lambda_package" {
     interpreter = ["/bin/bash", "-c"]
   }
 
-  # This makes the resource run every time Terraform applies
   triggers = {
     always_run = timestamp()
   }
@@ -61,3 +61,13 @@ resource "null_resource" "cleanup_lambda_package" {
     aws_lambda_function.this
   ]
 }
+
+/*
+ToDos:
+  - Enable lambda layers support by optionally calling aws/lambda-layer module
+  - Add support for VPC configuration
+  - Add support for environment variables
+  - Add support for event sources (Eventbridge, SQS, SNS, S3, etc.)
+  - Add support for tags
+  - Add support for KMS encryption
+*/
