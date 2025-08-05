@@ -36,8 +36,6 @@ resource "null_resource" "build_layer" {
   # Using a local-exec provisioner to run commands for building the layer
   provisioner "local-exec" {
     command     = <<-EOT
-      # Ensuring the script fails on any error and treats unset variables as errors
-      set -euo pipefail
       WORK="${local.layers_mount_point}/${each.key}"
       rm -rf "$WORK"
       mkdir -p "$WORK/python"
@@ -51,55 +49,50 @@ resource "null_resource" "build_layer" {
 
       # Ensuring determinism by removing cache files
       find "$WORK/python" -type f -name '*.pyc' -delete
+
+      # Zip the python directory for Lambda layer
+      if [ -d "$WORK/python" ]; then
+        cd "$WORK" && zip -r "../${each.key}.zip" python
+      else
+        echo "No python directory to zip for layer ${each.key}"; exit 1
+      fi
     EOT
     interpreter = ["/bin/bash", "-c"]
   }
 }
 
-# Creating an archive file for the layers
-data "archive_file" "layer_zip" {
-  for_each    = null_resource.build_layer
-  type        = "zip"
-  source_dir  = "${local.layers_mount_point}/${each.key}"
-  output_path = "${local.layers_mount_point}/${each.key}.zip"
+# Creating the AWS Lambda layer version from the zipped archive
+resource "aws_lambda_layer_version" "this" {
+  for_each = var.layers_info
+
+  filename                 = "${local.layers_mount_point}/${each.key}.zip"
+  layer_name               = each.key
+  description              = lookup(var.layers_info[each.key], "description", null)
+  compatible_runtimes      = [var.layers_info[each.key].runtime]
+  compatible_architectures = lookup(var.layers_info[each.key], "compatible_architectures", null)
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   depends_on = [
     null_resource.build_layer
   ]
 }
 
-# Creating the AWS Lambda layer version from the zipped archive
-resource "aws_lambda_layer_version" "this" {
-  for_each = data.archive_file.layer_zip
-
-  filename                 = each.value.output_path
-  layer_name               = each.key
-  description              = lookup(var.layers_info[each.key], "description", null)
-  compatible_runtimes      = [var.layers_info[each.key].runtime]
-  compatible_architectures = lookup(var.layers_info[each.key], "compatible_architectures", null)
-
-  # Ensuring the layer is created before destroying the old version to avoid downtime
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
 # Cleaning up temporary build directories and zip files after layer creation if cleanup is enabled
 resource "null_resource" "cleanup_layer_build" {
-  for_each = var.cleanup_after_build ? aws_lambda_layer_version.this : {}
+  for_each = var.layers_info
 
-  # Local-exec provisioner to remove temporary build directory and zip file
   provisioner "local-exec" {
-    command     = "rm -rf ${local.layers_mount_point}/${each.key} ${local.layers_mount_point}/${each.key}.zip"
+    command     = "rm -rf ${local.layers_mount_point}"
     interpreter = ["/bin/bash", "-c"]
   }
 
-  # This makes the resource run every time Terraform applies
   triggers = {
     always_run = timestamp()
   }
 
-  # Ensure cleanup only happens after the layer is created
   depends_on = [
     aws_lambda_layer_version.this
   ]

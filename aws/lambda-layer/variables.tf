@@ -9,12 +9,6 @@
     Terraform module.
 ----------------------------------------------------------------------------- */
 
-variable "layers_mount_point" {
-  description = "The directory where layers will be built. This is a temporary directory used during the layer creation process. If this value is set to an empty string, the module will use a default path based on the root of the Terraform project."
-  type        = string
-  default     = ""
-}
-
 variable "layers_info" {
   description = "A layer configuration map holding the details for each layer to be created. Each key is the logical name of the layer, and the value is an object containing options such as Python requirements, runtime, description, and compatible architectures."
   type = map(
@@ -28,10 +22,4 @@ variable "layers_info" {
       }
     )
   )
-}
-
-variable "cleanup_after_build" {
-  description = "If true, the module will remove the temporary build directories after creating the Lambda layers."
-  type        = bool
-  default     = true
 }

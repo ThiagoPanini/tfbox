@@ -99,6 +99,48 @@ jobs:
         run: terraform validate
         working-directory: aws/sqs-queue
 
+  ci-terraform-sns-topic:
+    name: 🛠️ ci-terraform-sns-topic
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Terraform Setup
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.10.5
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: aws/sns-topic
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: aws/sns-topic
+  
+  ci-terraform-lambda-function:
+    name: 🛠️ ci-terraform-lambda-function
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Terraform Setup
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.10.5
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: aws/lambda-function
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: aws/lambda-function
+
   open-pr-to-main:
     name: 🔓 open-pr-to-main
     runs-on: ubuntu-latest
@@ -107,6 +149,8 @@ jobs:
       - ci-terraform-iam-role
       - ci-terraform-lambda-layer
       - ci-terraform-sqs-queue
+      - ci-terraform-sns-topic
+      - ci-terraform-lambda-function
 
     steps:
       - name: Checkout

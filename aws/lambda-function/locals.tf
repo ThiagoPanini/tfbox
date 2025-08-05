@@ -8,12 +8,12 @@
     including the source code directory and the structure of layer information.
 
   LOCALS:
-    - layers_mount_point:
-        The directory where layers will be built. This is a temporary directory
-        used during the layer creation process.
+    
 ----------------------------------------------------------------------------- */
 
 locals {
-  # Mount point dir where layers will be built
-  layers_mount_point = "${path.root}/.layer_build"
+  # Paths information for Lambda function source code
+  source_dir_parent = dirname(var.source_code_path)
+  source_dir_name   = basename(var.source_code_path)
+  output_zip        = "${local.source_dir_parent}/${var.function_name}.zip"
 }
