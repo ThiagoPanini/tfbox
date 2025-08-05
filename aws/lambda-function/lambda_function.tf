@@ -15,18 +15,6 @@
     - aws_lambda_event_source_mapping.this: Configures event source mappings.
 ----------------------------------------------------------------------------- */
 
-# Build Lambda deployment package (zip) from source_path
-resource "null_resource" "zip_lambda_package" {
-
-  provisioner "local-exec" {
-    command = "cd ${local.source_dir_parent} && zip -r ${local.output_zip} ${local.source_dir_name}"
-  }
-
-  triggers = {
-    always_run = timestamp()
-  }
-}
-
 # Build Lambda function
 resource "aws_lambda_function" "this" {
   function_name = var.function_name
@@ -36,29 +24,13 @@ resource "aws_lambda_function" "this" {
   timeout       = var.timeout
   memory_size   = var.memory_size
 
-  filename = local.output_zip
+  filename = local.output_zip_package
   handler  = var.lambda_handler
+
+  layers = module.aws_lambda_layers[0].layer_arns
 
   depends_on = [
     null_resource.zip_lambda_package
-  ]
-}
-
-# Cleanup zip after deployment (optional, controlled by var.cleanup_after_build)
-resource "null_resource" "cleanup_lambda_package" {
-  count = var.cleanup_after_build ? 1 : 0
-
-  provisioner "local-exec" {
-    command     = "rm -f ${local.output_zip}"
-    interpreter = ["/bin/bash", "-c"]
-  }
-
-  triggers = {
-    always_run = timestamp()
-  }
-
-  depends_on = [
-    aws_lambda_function.this
   ]
 }
 
