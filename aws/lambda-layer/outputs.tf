@@ -7,17 +7,17 @@
     version numbers.
 ----------------------------------------------------------------------------- */
 
-output "layer_arns" {
+output "layers_arns" {
   description = "ARNs of the created Lambda layers."
   value       = [for l in aws_lambda_layer_version.this : l.arn]
 }
 
-output "layer_names" {
+output "layers_names" {
   description = "Names of the created Lambda layers."
   value       = [for l in aws_lambda_layer_version.this : l.layer_name]
 }
 
-output "layer_versions" {
+output "layers_versions" {
   description = "Version numbers of the created Lambda layers."
   value       = [for l in aws_lambda_layer_version.this : l.version]
 }
