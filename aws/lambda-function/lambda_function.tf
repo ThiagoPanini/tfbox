@@ -27,7 +27,7 @@ resource "aws_lambda_function" "this" {
   filename = local.output_zip_package
   handler  = var.lambda_handler
 
-  layers = module.aws_lambda_layers[0].layer_arns
+  layers = module.aws_lambda_layers[0].layers_arns
 
   depends_on = [
     null_resource.zip_lambda_package

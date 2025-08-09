@@ -36,12 +36,12 @@ variable "create_lambda_layers" {
   default     = false
 }
 
-variable "lambda_layers_info" {
+variable "layers_map" {
   description = "Map of Lambda Layers to create if create_lambda_layers is true. Each key is the layer name, and the value is an object with layer configuration."
   type = map(
     object(
       {
-        python_requirements      = list(string)
+        requirements             = list(string)
         runtime                  = string
         description              = optional(string, "A lambda layer created by Terraform module at git::https://github.com/ThiagoPanini/tfbox.git?ref=aws/lambda-layer")
         compatible_architectures = optional(list(string), ["x86_64"])
@@ -51,7 +51,7 @@ variable "lambda_layers_info" {
   )
 
   validation {
-    condition     = var.create_lambda_layers == false || length(var.lambda_layers_info) > 0
+    condition     = var.create_lambda_layers == false || length(var.layers_map) > 0
     error_message = "If create_lambda_layers is true, lambda_layers_info must contain at least one layer configuration."
   }
 }
