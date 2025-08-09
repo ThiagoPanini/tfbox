@@ -128,3 +128,37 @@ variable "lambda_handler" {
     error_message = "Handler must be a valid Python module and function name (e.g., module.function)."
   }
 }
+
+variable "environment_variables" {
+  description = "Map of environment variables to set for the Lambda function."
+  type        = map(string)
+  default     = {}
+}
+
+variable "tags" {
+  description = "Tags to apply to the Lambda function."
+  type        = map(string)
+  default     = {}
+}
+
+
+/* --------------------------------
+   VARIABLES: Lambda Trigger
+-------------------------------- */
+
+variable "create_eventbridge_trigger" {
+  description = "Whether to create an EventBridge rule to trigger the Lambda function based on a cron expression."
+  type        = bool
+  default     = false
+}
+
+variable "cron_expression" {
+  description = "Cron expression to schedule the Lambda function using EventBridge (e.g., cron(0 12 * * ? *))."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.create_eventbridge_trigger == false || (var.create_eventbridge_trigger == true && can(regex("^cron\\(.*\\)$", var.cron_expression)))
+    error_message = "If create_eventbridge_trigger is true, cron_expression must be a valid cron expression in the format cron(...)."
+  }
+}
