@@ -8,7 +8,8 @@
     map to the module for layer creation.
 
   RESOURCES:
-    - module.aws_lambda_layers: Provisions Lambda Layers if enabled.
+    - module.aws_lambda_layers:
+        Provisions Lambda Layers if enabled.
 ----------------------------------------------------------------------------- */
 
 # Calling the Lambda Layers module to create layers if enabled

@@ -9,8 +9,11 @@
     keep the workspace clean.
 
   RESOURCES:
-    - null_resource.zip_lambda_package: Creates the Lambda deployment .zip file.
-    - null_resource.cleanup_lambda_package: Deletes the .zip file after deployment.
+    - null_resource.zip_lambda_package:
+        Creates the Lambda deployment .zip file.
+
+    - null_resource.cleanup_lambda_package:
+        Deletes the .zip file after deployment.
 ----------------------------------------------------------------------------- */
 
 # Build lambda deployment package (.zip) from source_path

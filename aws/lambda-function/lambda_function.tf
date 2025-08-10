@@ -7,7 +7,8 @@
     configuration and best practices.
 
   RESOURCES:
-    - aws_lambda_function.this: Provisions the Lambda function.
+    - aws_lambda_function.this:
+        Provisions the Lambda function.
 ----------------------------------------------------------------------------- */
 
 # Build Lambda function
