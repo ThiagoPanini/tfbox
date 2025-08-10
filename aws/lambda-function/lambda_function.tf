@@ -35,13 +35,3 @@ resource "aws_lambda_function" "this" {
     null_resource.zip_lambda_package
   ]
 }
-
-/*
-ToDos:
-  - [x] Enable lambda layers support by optionally calling aws/lambda-layer module
-  - [ ] Add support for VPC configuration
-  - [x] Add support for environment variables
-  - [ ] Add support for event sources (Eventbridge, SQS, SNS, S3, etc.)
-  - [x] Add support for tags
-  - [ ] Add support for KMS encryption
-*/
