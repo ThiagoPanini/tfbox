@@ -10,6 +10,57 @@ DESCRIPTION:
     Lambda resources within the aws/lambda-function Terraform module.
 ----------------------------------------------------------------------------- */
 
+
+/* --------------------------------
+   VARIABLES: Lambda Package
+-------------------------------- */
+
+variable "source_code_path" {
+  description = "The local path where the Lambda source code is located (e.g 'app', 'app/src' or 'app/src/my_app_slice')."
+  type        = string
+
+  validation {
+    condition     = !endswith(var.source_code_path, "/")
+    error_message = "The source code path must not end with a slash ('/')."
+  }
+}
+
+
+/* --------------------------------
+   VARIABLES: Lambda Layers
+-------------------------------- */
+
+variable "create_lambda_layers" {
+  description = "Whether to create Lambda Layers using the aws/lambda-layer module."
+  type        = bool
+  default     = false
+}
+
+variable "layers_map" {
+  description = "Map of Lambda Layers to create if create_lambda_layers is true. Each key is the layer name, and the value is an object with layer configuration."
+  type = map(
+    object(
+      {
+        requirements             = list(string)
+        runtime                  = string
+        description              = optional(string, "A lambda layer created by Terraform module at git::https://github.com/ThiagoPanini/tfbox.git?ref=aws/lambda-layer")
+        compatible_architectures = optional(list(string), ["x86_64"])
+        license_info             = optional(string, null)
+      }
+    )
+  )
+
+  validation {
+    condition     = var.create_lambda_layers == false || length(var.layers_map) > 0
+    error_message = "If create_lambda_layers is true, lambda_layers_info must contain at least one layer configuration."
+  }
+}
+
+
+/* --------------------------------
+   VARIABLES: Lambda Function
+-------------------------------- */
+
 variable "function_name" {
   description = "Name of the Lambda function"
   type        = string
@@ -68,16 +119,6 @@ variable "memory_size" {
   }
 }
 
-variable "source_code_path" {
-  description = "The local path where the Lambda source code is located (e.g 'app', 'app/src' or 'app/src/my_app_slice')."
-  type        = string
-
-  validation {
-    condition     = !endswith(var.source_code_path, "/")
-    error_message = "The source code path must not end with a slash ('/')."
-  }
-}
-
 variable "lambda_handler" {
   description = "Lambda function handler (e.g., lambda_function.lambda_handler)."
   type        = string
@@ -88,148 +129,36 @@ variable "lambda_handler" {
   }
 }
 
-variable "cleanup_after_build" {
-  description = "Whether to cleanup the zip file after deployment."
-  type        = bool
-  default     = true
-}
-
-/*
-variable "create_iam_role" {
-  description = "Whether to create a new IAM role for the Lambda function"
-  type        = bool
-  default     = true
-}
-
-variable "role_arn" {
-  description = "IAM role ARN for Lambda execution"
-  type        = string
-  default     = null
-
-  validation {
-    condition     = var.create_iam_role || can(regex("^arn:aws:iam::[0-9]{12}:role/.+$", var.role_arn))
-    error_message = "If create_iam_role is false, role_arn must be a valid IAM role ARN."
-  }
-}
-
-
-
-
-variable "handler" {
-  description = "Function entrypoint handler"
-  type        = string
-}
-
-variable "source_path" {
-  description = "Local path to Lambda source code directory to be zipped."
-  type        = string
-}
-
-variable "output_zip_path" {
-  description = "Path to output zip file for Lambda deployment package."
-  type        = string
-  default     = "./app/lambda_function_package.zip"
-}
-
-variable "cleanup_after_build" {
-  description = "Whether to cleanup the zip file after deployment."
-  type        = bool
-  default     = true
-}
-
-variable "filename" {
-  description = "Path to local deployment package (zip)"
-  type        = string
-  default     = null
-}
-
-variable "s3_bucket" {
-  description = "S3 bucket for deployment package"
-  type        = string
-  default     = null
-}
-
-variable "s3_key" {
-  description = "S3 key for deployment package"
-  type        = string
-  default     = null
-}
-
-variable "source_code_hash" {
-  description = "Base64-encoded SHA256 hash of deployment package"
-  type        = string
-  default     = null
-}
-
-variable "layers" {
-  description = "List of Lambda Layer ARNs"
-  type        = list(string)
-  default     = []
-}
-
-variable "memory_size" {
-  description = "Amount of memory in MB"
-  type        = number
-  default     = 128
-}
-
-variable "timeout" {
-  description = "Function timeout in seconds"
-  type        = number
-  default     = 3
-}
-
 variable "environment_variables" {
-  description = "Map of environment variables"
+  description = "Map of environment variables to set for the Lambda function."
   type        = map(string)
   default     = {}
-}
-
-variable "subnet_ids" {
-  description = "List of VPC subnet IDs"
-  type        = list(string)
-  default     = []
-}
-
-variable "security_group_ids" {
-  description = "List of VPC security group IDs"
-  type        = list(string)
-  default     = []
 }
 
 variable "tags" {
-  description = "Tags to apply to resources"
+  description = "Tags to apply to the Lambda function."
   type        = map(string)
   default     = {}
 }
 
-variable "tracing_mode" {
-  description = "X-Ray tracing mode (Active/PassThrough)"
-  type        = string
-  default     = "PassThrough"
-}
 
-variable "log_retention_in_days" {
-  description = "CloudWatch log retention in days"
-  type        = number
-  default     = 30
-}
+/* --------------------------------
+   VARIABLES: Lambda Trigger
+-------------------------------- */
 
-variable "enable_alias" {
-  description = "Enable Lambda alias creation"
+variable "create_eventbridge_trigger" {
+  description = "Whether to create an EventBridge rule to trigger the Lambda function based on a cron expression."
   type        = bool
   default     = false
 }
 
-variable "alias_name" {
-  description = "Name of the Lambda alias"
+variable "cron_expression" {
+  description = "Cron expression to schedule the Lambda function using EventBridge (e.g., cron(0 12 * * ? *))."
   type        = string
-  default     = "live"
-}
+  default     = ""
 
-variable "event_sources" {
-  description = "List of event source mappings (objects with arn, enabled)"
-  type        = list(object({ arn = string, enabled = bool }))
-  default     = []
+  validation {
+    condition     = var.create_eventbridge_trigger == false || (var.create_eventbridge_trigger == true && can(regex("^cron\\(.*\\)$", var.cron_expression)))
+    error_message = "If create_eventbridge_trigger is true, cron_expression must be a valid cron expression in the format cron(...)."
+  }
 }
-*/

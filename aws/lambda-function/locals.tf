@@ -13,7 +13,7 @@
 
 locals {
   # Paths information for Lambda function source code
-  source_dir_parent = dirname(var.source_code_path)
-  source_dir_name   = basename(var.source_code_path)
-  output_zip        = "${local.source_dir_parent}/${var.function_name}.zip"
+  source_dir_parent  = dirname(var.source_code_path)
+  source_dir_name    = basename(var.source_code_path)
+  output_zip_package = "${local.source_dir_parent}/${var.function_name}.zip"
 }
