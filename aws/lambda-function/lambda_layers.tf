@@ -14,7 +14,8 @@
 
 # Calling the Lambda Layers module to create layers if enabled
 module "aws_lambda_layers" {
-  count      = var.create_lambda_layers ? 1 : 0
-  source     = "git::https://github.com/ThiagoPanini/tfbox.git?ref=aws/lambda-layer/v0.4.0"
+  count = var.create_lambda_layers ? 1 : 0
+  # source              = "git::https://github.com/ThiagoPanini/tfbox.git?ref=aws/lambda-layer/v0.3.0"
+  source     = "../lambda-layer"
   layers_map = var.layers_map
 }
