@@ -25,7 +25,7 @@
 
 # Declaring a null resource to build layers during module call
 resource "null_resource" "build_layer" {
-  for_each = var.layers_map
+  for_each = var.layers_to_create
 
   # Defining triggers to ensure the resource is recreated when layer configurations change
   triggers = {
@@ -63,13 +63,13 @@ resource "null_resource" "build_layer" {
 
 # Creating the AWS Lambda layer version from the zipped archive
 resource "aws_lambda_layer_version" "this" {
-  for_each = var.layers_map
+  for_each = var.layers_to_create
 
   filename                 = "${local.layers_mount_point}/${each.key}.zip"
   layer_name               = each.key
-  description              = lookup(var.layers_map[each.key], "description", null)
-  compatible_runtimes      = [var.layers_map[each.key].runtime]
-  compatible_architectures = lookup(var.layers_map[each.key], "compatible_architectures", null)
+  description              = lookup(var.layers_to_create[each.key], "description", null)
+  compatible_runtimes      = [var.layers_to_create[each.key].runtime]
+  compatible_architectures = lookup(var.layers_to_create[each.key], "compatible_architectures", null)
 
   lifecycle {
     create_before_destroy = true
@@ -82,7 +82,7 @@ resource "aws_lambda_layer_version" "this" {
 
 # Cleaning up temporary build directories and zip files after layer creation if cleanup is enabled
 resource "null_resource" "cleanup_layer_build" {
-  for_each = var.layers_map
+  for_each = var.layers_to_create
 
   provisioner "local-exec" {
     command     = "rm -rf ${local.layers_mount_point}"

@@ -30,13 +30,7 @@ variable "source_code_path" {
    VARIABLES: Lambda Layers
 -------------------------------- */
 
-variable "create_lambda_layers" {
-  description = "Whether to create Lambda Layers using the aws/lambda-layer module."
-  type        = bool
-  default     = false
-}
-
-variable "layers_map" {
+variable "layers_to_create" {
   description = "Map of Lambda Layers to create if create_lambda_layers is true. Each key is the layer name, and the value is an object with layer configuration."
   type = map(
     object(
@@ -49,11 +43,14 @@ variable "layers_map" {
       }
     )
   )
+  default = {}
+}
 
-  validation {
-    condition     = var.create_lambda_layers == false || length(var.layers_map) > 0
-    error_message = "If create_lambda_layers is true, lambda_layers_info must contain at least one layer configuration."
-  }
+variable "managed_layers_arns" {
+  description = "List of ARNs for AWS managed Lambda Layers to attach to the function (e.g., AWS provided layers or layers from other accounts)."
+  type        = list(string)
+  default     = []
+
 }
 
 
