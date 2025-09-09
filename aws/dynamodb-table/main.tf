@@ -14,11 +14,13 @@
 ----------------------------------------------------------------------------- */
 
 resource "aws_dynamodb_table" "this" {
-  name         = var.name
-  billing_mode = var.billing_mode
-  hash_key     = var.hash_key
-  range_key    = var.range_key
-  tags         = var.tags
+  name             = var.name
+  billing_mode     = var.billing_mode
+  hash_key         = var.hash_key
+  range_key        = var.range_key
+  stream_enabled   = var.stream_enabled
+  stream_view_type = var.stream_view_type
+  tags             = var.tags
 
   dynamic "attribute" {
     for_each = var.attributes
