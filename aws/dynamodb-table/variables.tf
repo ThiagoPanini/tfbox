@@ -51,6 +51,23 @@ variable "billing_mode" {
   }
 }
 
+variable "stream_enabled" {
+  description = "Indicates whether DynamoDB Streams is to be enabled (true) or disabled (false)."
+  type        = bool
+  default     = false
+}
+
+variable "stream_view_type" {
+  description = "When an item in the table is modified, StreamViewType determines what information is written to the stream for this table. Valid values are: 'NEW_IMAGE', 'OLD_IMAGE', 'NEW_AND_OLD_IMAGES', 'KEYS_ONLY'."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.stream_view_type == null || contains(["NEW_IMAGE", "OLD_IMAGE", "NEW_AND_OLD_IMAGES", "KEYS_ONLY"], var.stream_view_type)
+    error_message = "The variable value must be 'NEW_IMAGE', 'OLD_IMAGE', 'NEW_AND_OLD_IMAGES', or 'KEYS_ONLY'."
+  }
+}
+
 variable "tags" {
   description = "Tags to apply to the DynamoDB table."
   type        = map(string)
