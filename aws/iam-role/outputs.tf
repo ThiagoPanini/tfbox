@@ -7,17 +7,12 @@
     policy ARNs.
 ----------------------------------------------------------------------------- */
 
-output "role_name" {
-  description = "Name of the IAM role."
-  value       = aws_iam_role.this.name
+output "roles_arns" {
+  description = "ARNs of the created IAM roles."
+  value       = { for role in aws_iam_role.roles : role.name => role.arn }
 }
 
-output "role_arn" {
-  description = "ARN of the IAM role."
-  value       = aws_iam_role.this.arn
-}
-
-output "attached_policy_arns" {
-  description = "List of ARNs for policies attached to the IAM role."
-  value       = [for a in aws_iam_role_policy_attachment.inline_attachments : a.policy_arn]
+output "policies_arns" {
+  description = "ARNs of the policies attached to the IAM roles."
+  value       = { for policy in aws_iam_policy.policies : policy.name => policy.arn }
 }

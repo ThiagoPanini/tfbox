@@ -24,9 +24,9 @@
 
 # Render IAM policy templates using user-defined variables
 resource "template_dir" "policies_templates" {
-  source_dir      = var.policy_templates_source_dir
-  destination_dir = local.policies_templates_destination_dir
-  vars            = var.policy_templates_vars
+  source_dir      = var.policies_template_config.templates_source_dir
+  destination_dir = local.templates_destination_dir
+  vars            = var.policies_template_config.templates_vars
 }
 
 # Load rendered policy files as local data sources

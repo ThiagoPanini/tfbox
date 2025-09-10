@@ -28,20 +28,32 @@
 
 locals {
   # Output directory for rendered policy templates
-  rendered_templates_dir = "${var.policy_templates_source_dir}/../${basename(var.policy_templates_source_dir)}_rendered"
-
-  # Destination directory for policy templates; defaults to rendered_templates_dir if not set
-  policies_templates_destination_dir = var.policy_templates_destination_dir == "" ? local.rendered_templates_dir : var.policy_templates_destination_dir
+  templates_destination_dir = "${var.policies_template_config.templates_source_dir}/../${basename(var.policies_template_config.templates_source_dir)}_rendered"
 
   # List of policy template filenames in the source directory, filtered by ".json" and ".tpl" extensions
   templates_filenames = [
-    for file in fileset(var.policy_templates_source_dir, "**") :
+    for file in fileset(var.policies_template_config.templates_source_dir, "**") :
     file if lower(element(split(".", file), -1)) == "json" || lower(element(split(".", file), -1)) == "tpl"
   ]
 
   # Map of template names (without extension) to their full destination file paths
   templates_filepaths = {
     for tpl in local.templates_filenames :
-    split(".", tpl)[0] => "${local.policies_templates_destination_dir}/${tpl}"
+    split(".", tpl)[0] => "${local.templates_destination_dir}/${tpl}"
+  }
+
+  roles_and_policies_attachments = {
+    for rp in flatten([
+      for role in var.roles_config : [
+        for policy in role.policies_arns : {
+          key         = "policy-${policy}-attachment-to-role-${role.role_name}"
+          policy_name = policy
+          role_name   = role.role_name
+        }
+      ]
+      ]) : rp.key => {
+      policy_name = rp.policy_name
+      role_name   = rp.role_name
+    }
   }
 }

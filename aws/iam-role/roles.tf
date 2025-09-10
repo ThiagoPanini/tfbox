@@ -23,27 +23,27 @@
 ----------------------------------------------------------------------------- */
 
 # Create IAM role with specified trust policy
-resource "aws_iam_role" "this" {
-  name                  = var.role_name
-  assume_role_policy    = file(var.trust_policy_filepath)
+resource "aws_iam_role" "roles" {
+  for_each              = { for role in var.roles_config : role.role_name => role }
+  name                  = each.value.role_name
+  assume_role_policy    = file(each.value.trust_policy_filepath)
   force_detach_policies = true
   tags                  = var.tags
-}
-
-# Attach inline policies created within the module to the IAM role
-resource "aws_iam_role_policy_attachment" "inline_attachments" {
-  for_each   = aws_iam_policy.policies
-  role       = aws_iam_role.this.name
-  policy_arn = each.value.arn
 
   depends_on = [
     aws_iam_policy.policies
   ]
 }
 
-# Attach existing IAM policies (by ARN) to the IAM role
-resource "aws_iam_role_policy_attachment" "existent_attachment" {
-  for_each   = { for arn in var.existent_policy_arns : arn => arn }
-  role       = aws_iam_role.this.name
-  policy_arn = each.value
+# Applying policy attachments to roles
+resource "aws_iam_role_policy_attachment" "policies_attachments" {
+  for_each   = local.roles_and_policies_attachments
+  role       = each.value.role_name
+  policy_arn = each.value.policy_name
+
+  depends_on = [
+    aws_iam_role.roles,
+    aws_iam_policy.policies
+  ]
+
 }
