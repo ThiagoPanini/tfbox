@@ -23,7 +23,7 @@ resource "aws_lambda_function" "this" {
   filename = local.output_zip_package
   handler  = var.lambda_handler
 
-  layers = local.layers_arns
+  layers = var.layers_arns
 
   environment {
     variables = var.environment_variables

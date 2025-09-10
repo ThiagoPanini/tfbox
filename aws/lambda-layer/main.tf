@@ -25,18 +25,18 @@
 
 # Declaring a null resource to build layers during module call
 resource "null_resource" "build_layer" {
-  for_each = var.layers_map
+  for_each = { for layer in var.layers_config : layer.name => layer }
 
   # Defining triggers to ensure the resource is recreated when layer configurations change
   triggers = {
     python_requirements_hash = sha1(join(",", each.value.requirements))
-    runtime                  = each.value.runtime
+    runtime                  = each.value.runtime[0] # Assuming single runtime for simplicity
   }
 
   # Using a local-exec provisioner to run commands for building the layer
   provisioner "local-exec" {
     command     = <<-EOT
-      WORK="${local.layers_mount_point}/${each.key}"
+      WORK="${local.layers_mount_point}/${each.value.name}"
       rm -rf "$WORK"
       mkdir -p "$WORK/python"
 
@@ -52,9 +52,9 @@ resource "null_resource" "build_layer" {
 
       # Zip the python directory for Lambda layer
       if [ -d "$WORK/python" ]; then
-        cd "$WORK" && zip -r "../${each.key}.zip" python
+        cd "$WORK" && zip -r "../${each.value.name}.zip" python
       else
-        echo "No python directory to zip for layer ${each.key}"; exit 1
+        echo "No python directory to zip for layer ${each.value.name}"; exit 1
       fi
     EOT
     interpreter = ["/bin/bash", "-c"]
@@ -63,13 +63,14 @@ resource "null_resource" "build_layer" {
 
 # Creating the AWS Lambda layer version from the zipped archive
 resource "aws_lambda_layer_version" "this" {
-  for_each = var.layers_map
+  for_each = { for layer in var.layers_config : layer.name => layer }
 
-  filename                 = "${local.layers_mount_point}/${each.key}.zip"
-  layer_name               = each.key
-  description              = lookup(var.layers_map[each.key], "description", null)
-  compatible_runtimes      = [var.layers_map[each.key].runtime]
-  compatible_architectures = lookup(var.layers_map[each.key], "compatible_architectures", null)
+  filename                 = "${local.layers_mount_point}/${each.value.name}.zip"
+  layer_name               = each.value.name
+  description              = each.value.description
+  license_info             = each.value.license_info
+  compatible_runtimes      = each.value.runtime
+  compatible_architectures = each.value.compatible_architectures
 
   lifecycle {
     create_before_destroy = true
@@ -82,7 +83,7 @@ resource "aws_lambda_layer_version" "this" {
 
 # Cleaning up temporary build directories and zip files after layer creation if cleanup is enabled
 resource "null_resource" "cleanup_layer_build" {
-  for_each = var.layers_map
+  for_each = { for layer in var.layers_config : layer.name => layer }
 
   provisioner "local-exec" {
     command     = "rm -rf ${local.layers_mount_point}"
