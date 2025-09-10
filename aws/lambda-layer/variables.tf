@@ -20,14 +20,15 @@ variable "layers_programming_language" {
   }
 }
 
-variable "layers_map" {
-  description = "A layer configuration map holding the details for each layer to be created. Each key is the logical name of the layer, and the value is an object containing options such as Python requirements, runtime, description, and compatible architectures."
-  type = map(
+variable "layers_config" {
+  description = "A configuration object for the Lambda layers, including the mount point for building layers and whether to clean up temporary build directories after layer creation."
+  type = list(
     object(
       {
+        name                     = string
         requirements             = list(string)
-        runtime                  = string
-        description              = optional(string, "A lambda layer created by Terraform module at git::https://github.com/ThiagoPanini/tfbox.git?ref=aws/lambda-layer")
+        runtime                  = list(string)
+        description              = optional(string, "A lambda layer powered by tfbox")
         compatible_architectures = optional(list(string), ["x86_64"])
         license_info             = optional(string, null)
       }

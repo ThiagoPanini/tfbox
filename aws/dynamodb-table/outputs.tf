@@ -20,3 +20,8 @@ output "table_id" {
   description = "ID of the DynamoDB table."
   value       = aws_dynamodb_table.this.id
 }
+
+output "stream_arn" {
+  description = "ARN of the DynamoDB table stream."
+  value       = aws_dynamodb_table.this.stream_arn
+}

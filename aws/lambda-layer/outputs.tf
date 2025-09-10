@@ -8,16 +8,6 @@
 ----------------------------------------------------------------------------- */
 
 output "layers_arns" {
-  description = "ARNs of the created Lambda layers."
-  value       = [for l in aws_lambda_layer_version.this : l.arn]
-}
-
-output "layers_names" {
-  description = "Names of the created Lambda layers."
-  value       = [for l in aws_lambda_layer_version.this : l.layer_name]
-}
-
-output "layers_versions" {
-  description = "Version numbers of the created Lambda layers."
-  value       = [for l in aws_lambda_layer_version.this : l.version]
+  description = "A map of Lambda layer ARNs created by this module, with layer names as keys."
+  value       = { for layer in aws_lambda_layer_version.this : layer.layer_name => layer.arn }
 }

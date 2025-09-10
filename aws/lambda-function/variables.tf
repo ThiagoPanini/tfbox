@@ -30,23 +30,7 @@ variable "source_code_path" {
    VARIABLES: Lambda Layers
 -------------------------------- */
 
-variable "layers_to_create" {
-  description = "Map of Lambda Layers to create if create_lambda_layers is true. Each key is the layer name, and the value is an object with layer configuration."
-  type = map(
-    object(
-      {
-        requirements             = list(string)
-        runtime                  = string
-        description              = optional(string, "A lambda layer created by Terraform module at git::https://github.com/ThiagoPanini/tfbox.git?ref=aws/lambda-layer")
-        compatible_architectures = optional(list(string), ["x86_64"])
-        license_info             = optional(string, null)
-      }
-    )
-  )
-  default = {}
-}
-
-variable "managed_layers_arns" {
+variable "layers_arns" {
   description = "List of ARNs for AWS managed Lambda Layers to attach to the function (e.g., AWS provided layers or layers from other accounts)."
   type        = list(string)
   default     = []
