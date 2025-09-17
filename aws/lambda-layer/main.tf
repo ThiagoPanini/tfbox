@@ -28,10 +28,7 @@ resource "null_resource" "build_layer" {
 
   # Defining triggers to ensure the resource is recreated when layer configurations change
   triggers = {
-    python_requirements_hash = md5(join(",", each.value.requirements))
-    runtime                  = each.value.runtime[0] # Assuming single runtime for simplicity
-    compatible_architectures = join(",", each.value.compatible_architectures)
-    description              = each.value.description
+    layer_config_hash = local.layer_config_hashes[each.value.name]
   }
 
   # Using a local-exec provisioner to run commands for building the layer
@@ -74,12 +71,7 @@ resource "aws_lambda_layer_version" "this" {
   compatible_architectures = each.value.compatible_architectures
 
   # Add source code hash to detect changes in requirements and other layer configuration
-  source_code_hash = md5(join("|", [
-    join(",", each.value.requirements),
-    join(",", each.value.runtime),
-    join(",", each.value.compatible_architectures),
-    each.value.description
-  ]))
+  source_code_hash = local.layer_config_hashes[each.value.name]
 
   lifecycle {
     create_before_destroy = true
@@ -123,12 +115,7 @@ resource "null_resource" "cleanup_layer_build" {
 
   # Trigger cleanup only when this specific layer changes, not on every run
   triggers = {
-    layer_config_hash = md5(join("|", [
-      join(",", each.value.requirements),
-      join(",", each.value.runtime),
-      join(",", each.value.compatible_architectures),
-      each.value.description
-    ]))
+    layer_config_hash = local.layer_config_hashes[each.value.name]
   }
 
   depends_on = [
