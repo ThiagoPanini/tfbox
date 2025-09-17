@@ -27,7 +27,7 @@ resource "null_resource" "zip_lambda_package" {
   }
 
   triggers = {
-    always_run = timestamp()
+    source_code_hash = local.source_code_hash
   }
 }
 
@@ -39,7 +39,7 @@ resource "null_resource" "cleanup_lambda_package" {
   }
 
   triggers = {
-    always_run = timestamp()
+    source_code_hash = local.source_code_hash
   }
 
   depends_on = [

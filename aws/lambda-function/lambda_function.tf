@@ -20,8 +20,9 @@ resource "aws_lambda_function" "this" {
   timeout       = var.timeout
   memory_size   = var.memory_size
 
-  filename = local.output_zip_package
-  handler  = var.lambda_handler
+  filename         = local.output_zip_package
+  source_code_hash = local.source_code_hash
+  handler          = var.lambda_handler
 
   layers = var.layers_arns
 
