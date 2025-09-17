@@ -11,16 +11,15 @@
   RESOURCES:
     - null_resource.build_layer:
       Builds the layer by installing Python packages into a specified directory.
-    
-    - data.archive_file.layer_zip:
-      Creates a zip archive of the built layer directory.
+      Uses MD5 hash triggers to detect changes in layer configuration.
     
     - aws_lambda_layer_version.this:
       Deploys the zipped layer as a Lambda layer version.
+      Uses source_code_hash to trigger updates when layer configuration changes.
     
     - null_resource.cleanup_layer_build:
-      Cleans up temporary build directories and zip files after the layer is
-      created, if the cleanup option is enabled.
+      Safely cleans up layer-specific build directories and zip files after 
+      the layer is created. Only removes files that exist and avoids race conditions.
 ----------------------------------------------------------------------------- */
 
 # Declaring a null resource to build layers during module call
@@ -29,8 +28,7 @@ resource "null_resource" "build_layer" {
 
   # Defining triggers to ensure the resource is recreated when layer configurations change
   triggers = {
-    python_requirements_hash = sha1(join(",", each.value.requirements))
-    runtime                  = each.value.runtime[0] # Assuming single runtime for simplicity
+    layer_config_hash = local.layer_config_hashes[each.value.name]
   }
 
   # Using a local-exec provisioner to run commands for building the layer
@@ -72,6 +70,9 @@ resource "aws_lambda_layer_version" "this" {
   compatible_runtimes      = each.value.runtime
   compatible_architectures = each.value.compatible_architectures
 
+  # Add source code hash to detect changes in requirements and other layer configuration
+  source_code_hash = local.layer_config_hashes[each.value.name]
+
   lifecycle {
     create_before_destroy = true
   }
@@ -81,17 +82,40 @@ resource "aws_lambda_layer_version" "this" {
   ]
 }
 
-# Cleaning up temporary build directories and zip files after layer creation if cleanup is enabled
+# Cleaning up specific layer build artifacts after layer creation
 resource "null_resource" "cleanup_layer_build" {
   for_each = { for layer in var.layers_config : layer.name => layer }
 
   provisioner "local-exec" {
-    command     = "rm -rf ${local.layers_mount_point}"
+    command     = <<-EOT
+      # Only clean up files that actually exist for this specific layer
+      LAYER_DIR="${local.layers_mount_point}/${each.value.name}"
+      LAYER_ZIP="${local.layers_mount_point}/${each.value.name}.zip"
+      
+      # Remove layer-specific directory if it exists
+      if [ -d "$LAYER_DIR" ]; then
+        echo "Cleaning up layer directory: $LAYER_DIR"
+        rm -rf "$LAYER_DIR"
+      fi
+      
+      # Remove layer-specific zip file if it exists
+      if [ -f "$LAYER_ZIP" ]; then
+        echo "Cleaning up layer zip: $LAYER_ZIP"
+        rm -f "$LAYER_ZIP"
+      fi
+      
+      # Clean up mount point only if it's empty (no other layers building)
+      if [ -d "${local.layers_mount_point}" ] && [ -z "$(ls -A ${local.layers_mount_point} 2>/dev/null)" ]; then
+        echo "Cleaning up empty mount point: ${local.layers_mount_point}"
+        rmdir "${local.layers_mount_point}" 2>/dev/null || true
+      fi
+    EOT
     interpreter = ["/bin/bash", "-c"]
   }
 
+  # Trigger cleanup only when this specific layer changes, not on every run
   triggers = {
-    always_run = timestamp()
+    layer_config_hash = local.layer_config_hashes[each.value.name]
   }
 
   depends_on = [

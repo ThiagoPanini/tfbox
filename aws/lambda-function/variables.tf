@@ -25,6 +25,40 @@ variable "source_code_path" {
   }
 }
 
+variable "exclude_patterns" {
+  description = "List of glob patterns for files/directories to exclude from source code hash calculation. These files won't trigger Lambda redeployment when changed."
+  type        = list(string)
+  default = [
+    "**/__pycache__/**",
+    "**/*.pyc",
+    "**/*.pyo",
+    "**/.git/**",
+    "**/.gitignore",
+    "**/.DS_Store",
+    "**/Thumbs.db",
+    "**/.vscode/**",
+    "**/.idea/**",
+    "**/README.md",
+    "**/readme.md",
+    "**/*.md",
+    "**/tests/**",
+    "**/test_*.py",
+    "**/*_test.py",
+    "**/docs/**",
+    "**/.pytest_cache/**",
+    "**/node_modules/**",
+    "**/.env*",
+    "**/tmp/**",
+    "**/temp/**"
+  ]
+}
+
+variable "source_code_hash_enabled" {
+  description = "Whether to enable source code hash calculation for change detection. If false, will use timestamp-based triggers (always redeploy)."
+  type        = bool
+  default     = true
+}
+
 
 /* --------------------------------
    VARIABLES: Lambda Layers
