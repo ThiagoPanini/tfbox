@@ -14,6 +14,7 @@
 # Build Lambda function
 resource "aws_lambda_function" "this" {
   function_name = var.function_name
+  description   = var.description
   runtime       = var.runtime
   architectures = var.architectures
   role          = var.role_arn
