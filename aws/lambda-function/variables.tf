@@ -86,6 +86,18 @@ variable "function_name" {
   }
 }
 
+variable "description" {
+  description = "Description of the Lambda function"
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = length(var.description) <= 256
+    error_message = "Lambda function description must be 256 characters or fewer."
+  }
+
+}
+
 variable "runtime" {
   description = "Lambda runtime (e.g., python3.13, nodejs22.x)"
   type        = string
