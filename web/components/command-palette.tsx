@@ -69,7 +69,7 @@ export function CommandPaletteProvider({ modules, children }: { modules: Module[
           value={q}
           onValueChange={setQ}
           placeholder="Jump to module, input, output, resource…"
-          className="w-full border-b border-border bg-transparent px-4 py-3 text-sm outline-none placeholder:text-muted"
+          className="w-full border-b border-border bg-transparent px-4 py-3 text-sm outline-hidden placeholder:text-muted"
         />
         <Command.List className="max-h-[60vh] overflow-y-auto p-2">
           <Command.Empty className="px-3 py-6 text-center text-sm text-muted">No matches.</Command.Empty>
