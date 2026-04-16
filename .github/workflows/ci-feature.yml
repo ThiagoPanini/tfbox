@@ -45,8 +45,8 @@ jobs:
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           base: main
-          branch: ${{ github.ref }}
-          title: "pr(main): ${{ github.ref }} -> main"
+          branch: ${{ github.ref_name }}
+          title: "pr(main): ${{ github.ref_name }} -> main"
           body-path: ".github/pull_request_template.md"
           labels: "github-bot 🤖"
           commit-message: "bot: automatic PR opening to main branch"
