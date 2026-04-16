@@ -38,9 +38,12 @@ jobs:
 
       - name: Build catalog.json
         working-directory: scripts
+        run: npm run build
+
+      - name: Copy catalog to web/public
         run: |
-          mkdir -p ../web/public
-          npm run build:web
+          mkdir -p web/public
+          cp catalog.json web/public/catalog.json
 
       - name: Install web deps
         working-directory: web
