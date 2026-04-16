@@ -24,42 +24,39 @@ jobs:
         with:
           fetch-depth: 0 # maintainers + module version rely on full git history
 
-      - uses: pnpm/action-setup@v3
-        with: { version: 9 }
-
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: pnpm
+          cache: npm
           cache-dependency-path: |
-            scripts/pnpm-lock.yaml
-            web/pnpm-lock.yaml
+            scripts/package-lock.json
+            web/package-lock.json
 
       - name: Install catalog-builder deps
         working-directory: scripts
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Build catalog.json
         working-directory: scripts
-        run: pnpm build:web
+        run: npm run build:web
 
       - name: Install web deps
         working-directory: web
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Typecheck
         working-directory: web
-        run: pnpm typecheck
+        run: npm run typecheck
 
       - name: Parser unit tests
         working-directory: scripts
-        run: pnpm test
+        run: npm test
 
       - name: Next.js static export
         working-directory: web
         env:
           NEXT_PUBLIC_BASE_PATH: /tfbox
-        run: pnpm build
+        run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
