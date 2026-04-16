@@ -1,0 +1,75 @@
+name: "📦 Deploy Catalog to GitHub Pages"
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false # never interrupt an in-flight deploy
+
+jobs:
+  build:
+    name: 🏗️ build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # maintainers + module version rely on full git history
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: |
+            scripts/package-lock.json
+            web/package-lock.json
+
+      - name: Install catalog-builder deps
+        working-directory: scripts
+        run: npm ci
+
+      - name: Build catalog.json
+        working-directory: scripts
+        run: npm run build
+
+      - name: Copy catalog to web/public
+        run: |
+          mkdir -p web/public
+          cp catalog.json web/public/catalog.json
+
+      - name: Install web deps
+        working-directory: web
+        run: npm ci
+
+      - name: Next.js static export
+        working-directory: web
+        env:
+          NEXT_PUBLIC_BASE_PATH: /tfbox
+        run: npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/out
+
+  deploy:
+    name: 🚀 deploy
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

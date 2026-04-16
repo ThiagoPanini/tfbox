@@ -1,0 +1,23 @@
+{
+  "name": "@tfbox/catalog-builder",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Parses aws/<module>/*.tf into catalog.json consumed by the tfbox web catalog.",
+  "scripts": {
+    "build": "tsx build-catalog.ts",
+    "build:web": "tsx build-catalog.ts --out ../web/public/catalog.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@cdktf/hcl2json": "^0.20.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.1"
+  }
+}
