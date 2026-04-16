@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: 0 0% 100%;
+    --surface: 220 20% 98%;
+    --surface-2: 220 14% 96%;
+    --border: 220 13% 91%;
+    --text: 220 9% 10%;
+    --muted: 220 9% 46%;
+    --accent: 20 100% 55%;
+    --accent-fg: 0 0% 100%;
+    --accent-2: 220 90% 60%;
+    --success: 142 71% 45%;
+    --danger: 0 84% 60%;
+    --warn: 38 92% 50%;
+  }
+  .dark {
+    --bg: 220 13% 5%;
+    --surface: 220 13% 8%;
+    --surface-2: 220 12% 11%;
+    --border: 220 10% 16%;
+    --text: 220 14% 91%;
+    --muted: 220 9% 60%;
+    --accent: 20 100% 60%;
+    --accent-fg: 0 0% 100%;
+    --accent-2: 220 90% 66%;
+  }
+  html { font-feature-settings: "cv11", "ss01"; }
+  body { @apply bg-bg text-text font-sans antialiased; }
+  ::selection { background: hsl(var(--accent) / 0.35); }
+  code, pre, kbd { @apply font-mono; }
+  *:focus-visible { @apply outline-2 outline-offset-2 outline-accent; }
+}
+
+@layer components {
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-1 text-xs font-medium text-muted transition-colors;
+  }
+  .chip[data-active="true"] { @apply border-accent/60 bg-accent/10 text-accent; }
+  .card {
+    @apply relative rounded-xl border border-border bg-surface p-5 transition-all duration-150 ease-out will-change-transform;
+  }
+  .card:hover { @apply -translate-y-0.5 shadow-lift; border-color: hsl(var(--accent) / 0.5); }
+  .kbd {
+    @apply inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded border border-border bg-surface2 px-1 text-[10px] font-medium text-muted;
+  }
+}
+
+/* Shiki theme tweaks — keep background transparent so our card shell shows through. */
+pre.shiki, pre.shiki code { background: transparent !important; }

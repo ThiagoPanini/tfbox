@@ -1,6 +1,10 @@
 # Diretórios temporários de testes
 **tmp/
 **.ipynb
+.vscode
+.agents
+.serena
+.claude
 
 # Local .terraform directories
 **/.terraform/*
@@ -40,3 +44,10 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# catalog-builder / web app
+scripts/node_modules/
+web/node_modules/
+web/.next/
+web/out/
+catalog.json

@@ -1,0 +1,77 @@
+name: catalog + deploy
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed] # Closed required
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # maintainers + module version rely on full git history
+
+      - uses: pnpm/action-setup@v3
+        with: { version: 9 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+          cache-dependency-path: |
+            scripts/pnpm-lock.yaml
+            web/pnpm-lock.yaml
+
+      - name: Install catalog-builder deps
+        working-directory: scripts
+        run: pnpm install --frozen-lockfile
+
+      - name: Build catalog.json
+        working-directory: scripts
+        run: pnpm build:web
+
+      - name: Install web deps
+        working-directory: web
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        working-directory: web
+        run: pnpm typecheck
+
+      - name: Parser unit tests
+        working-directory: scripts
+        run: pnpm test
+
+      - name: Next.js static export
+        working-directory: web
+        env:
+          NEXT_PUBLIC_BASE_PATH: /tfbox
+        run: pnpm build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

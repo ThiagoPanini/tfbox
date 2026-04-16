@@ -1,0 +1,233 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://tfbox.dev/catalog.schema.json",
+  "title": "tfbox Catalog",
+  "type": "object",
+  "required": ["schemaVersion", "generatedAt", "repo", "categories", "modules", "search"],
+  "properties": {
+    "schemaVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "repo": {
+      "type": "object",
+      "required": ["name", "url", "commit", "branch"],
+      "properties": {
+        "name": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "commit": { "type": "string" },
+        "branch": { "type": "string" }
+      }
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "hue"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "hue": { "type": "string" }
+        }
+      }
+    },
+    "modules": { "type": "array", "items": { "$ref": "#/definitions/module" } },
+    "search": {
+      "type": "object",
+      "required": ["documents"],
+      "properties": {
+        "documents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "type", "text"],
+            "properties": {
+              "id": { "type": "string" },
+              "type": { "enum": ["module", "input", "output", "resource"] },
+              "text": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "module": {
+      "type": "object",
+      "required": [
+        "id", "name", "path", "category", "tags", "summary", "icon",
+        "version", "inputs", "outputs", "resources", "dataSources",
+        "moduleDependencies", "examples", "diagram", "files", "stats"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "path": { "type": "string" },
+        "category": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "summary": { "type": "string" },
+        "description": { "type": "string" },
+        "icon": { "type": "string" },
+        "version": {
+          "type": "object",
+          "required": ["module", "terraform", "providers"],
+          "properties": {
+            "module": { "type": "string" },
+            "terraform": { "type": "string" },
+            "providers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "source", "version"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "source": { "type": "string" },
+                  "version": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "maintainers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" },
+              "github": { "type": "string" }
+            }
+          }
+        },
+        "inputs": { "type": "array", "items": { "$ref": "#/definitions/input" } },
+        "outputs": { "type": "array", "items": { "$ref": "#/definitions/output" } },
+        "resources": { "type": "array", "items": { "$ref": "#/definitions/resource" } },
+        "dataSources": { "type": "array", "items": { "$ref": "#/definitions/dataSource" } },
+        "moduleDependencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["alias", "source"],
+            "properties": { "alias": { "type": "string" }, "source": { "type": "string" } }
+          }
+        },
+        "examples": {
+          "type": "object",
+          "required": ["minimal", "advanced", "withRemoteState"],
+          "properties": {
+            "minimal": { "type": "string" },
+            "advanced": { "type": "string" },
+            "withRemoteState": { "type": "string" }
+          }
+        },
+        "diagram": {
+          "type": "object",
+          "required": ["nodes", "edges"],
+          "properties": {
+            "nodes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["id", "kind", "label"],
+                "properties": {
+                  "id": { "type": "string" },
+                  "kind": { "enum": ["input", "resource", "output", "data"] },
+                  "label": { "type": "string" }
+                }
+              }
+            },
+            "edges": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["from", "to"],
+                "properties": { "from": { "type": "string" }, "to": { "type": "string" } }
+              }
+            }
+          }
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "bytes", "sha"],
+            "properties": {
+              "path": { "type": "string" },
+              "bytes": { "type": "integer", "minimum": 0 },
+              "sha": { "type": "string" }
+            }
+          }
+        },
+        "stats": {
+          "type": "object",
+          "required": ["inputCount", "outputCount", "resourceCount", "requiredInputCount"],
+          "properties": {
+            "inputCount": { "type": "integer" },
+            "outputCount": { "type": "integer" },
+            "resourceCount": { "type": "integer" },
+            "requiredInputCount": { "type": "integer" }
+          }
+        }
+      }
+    },
+    "input": {
+      "type": "object",
+      "required": ["name", "type", "description", "required", "default", "sensitive", "nullable", "validation", "sourceFile", "sourceLine"],
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "required": { "type": "boolean" },
+        "default": {},
+        "sensitive": { "type": "boolean" },
+        "nullable": { "type": "boolean" },
+        "validation": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["condition", "error_message"],
+            "properties": {
+              "condition": { "type": "string" },
+              "error_message": { "type": "string" }
+            }
+          }
+        },
+        "sourceFile": { "type": "string" },
+        "sourceLine": { "type": "integer" }
+      }
+    },
+    "output": {
+      "type": "object",
+      "required": ["name", "description", "sensitive", "expression", "sourceFile", "sourceLine"],
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "sensitive": { "type": "boolean" },
+        "expression": { "type": "string" },
+        "sourceFile": { "type": "string" },
+        "sourceLine": { "type": "integer" }
+      }
+    },
+    "resource": {
+      "type": "object",
+      "required": ["type", "name", "count", "forEach", "provider", "sourceFile", "sourceLine"],
+      "properties": {
+        "type": { "type": "string" },
+        "name": { "type": "string" },
+        "count": { "type": ["string", "null"] },
+        "forEach": { "type": ["string", "null"] },
+        "provider": { "type": "string" },
+        "sourceFile": { "type": "string" },
+        "sourceLine": { "type": "integer" }
+      }
+    },
+    "dataSource": {
+      "type": "object",
+      "required": ["type", "name", "sourceFile", "sourceLine"],
+      "properties": {
+        "type": { "type": "string" },
+        "name": { "type": "string" },
+        "sourceFile": { "type": "string" },
+        "sourceLine": { "type": "integer" }
+      }
+    }
+  }
+}
