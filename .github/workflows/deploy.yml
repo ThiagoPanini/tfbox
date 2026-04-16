@@ -38,7 +38,9 @@ jobs:
 
       - name: Build catalog.json
         working-directory: scripts
-        run: npm run build:web
+        run: |
+          mkdir -p ../web/public
+          npm run build:web
 
       - name: Install web deps
         working-directory: web
