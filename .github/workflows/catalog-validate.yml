@@ -32,13 +32,13 @@ jobs:
         working-directory: scripts
         run: npm ci
 
-      - name: Parser unit tests
-        working-directory: scripts
-        run: npm test
-
       - name: Build catalog.json
         working-directory: scripts
         run: npm run build
+
+      - name: Parser unit tests
+        working-directory: scripts
+        run: npm test
 
       - name: Copy catalog to web/public
         run: |
