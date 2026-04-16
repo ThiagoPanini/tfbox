@@ -38,10 +38,10 @@ jobs:
       pull-requests: write  # comment on PR with release preview
     steps:
       - name: 🔄 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🚀 Terraform Module Releaser
-        uses: techpivot/terraform-module-releaser@v1.4.1
+        uses: techpivot/terraform-module-releaser@v2.1.0
         with:
           default-first-tag: v0.0.1
           major-keywords: major change,breaking change
