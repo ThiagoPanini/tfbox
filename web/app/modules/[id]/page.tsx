@@ -8,8 +8,9 @@ export function generateStaticParams() {
   return moduleIds().map((id) => ({ id }));
 }
 
-export default function ModulePage({ params }: { params: { id: string } }) {
-  const m = moduleById(params.id);
+export default async function ModulePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const m = moduleById(id);
   if (!m) return notFound();
 
   return (
