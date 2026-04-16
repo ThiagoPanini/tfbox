@@ -10,154 +10,39 @@ on:
       - docs**
 
 permissions:
-  id-token: write
-  contents: write
-  pull-requests: write
+  contents: read
+
+concurrency:
+  group: ci-feature-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  ci-terraform-dynamodb-table:
-    name: 🛠️ ci-terraform-dynamodb-table
-    runs-on: ubuntu-latest
+  validate-terraform:
+    name: 🧪 terraform
+    uses: ./.github/workflows/tf-validate.yml
+    with:
+      modules: '["dynamodb-table","iam-role","lambda-layer","sqs-queue","sns-topic","lambda-function","glue-job"]'
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Terraform Setup
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.10.5
-
-      - name: Terraform Init
-        run: terraform init
-        working-directory: aws/dynamodb-table
-
-      - name: Terraform Validate
-        run: terraform validate
-        working-directory: aws/dynamodb-table
-  
-  ci-terraform-iam-role:
-    name: 🛠️ ci-terraform-iam-role
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Terraform Setup
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.10.5
-
-      - name: Terraform Init
-        run: terraform init
-        working-directory: aws/iam-role
-
-      - name: Terraform Validate
-        run: terraform validate
-        working-directory: aws/iam-role
-  
-  ci-terraform-lambda-layer:
-    name: 🛠️ ci-terraform-lambda-layer
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Terraform Setup
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.10.5
-
-      - name: Terraform Init
-        run: terraform init
-        working-directory: aws/lambda-layer
-
-      - name: Terraform Validate
-        run: terraform validate
-        working-directory: aws/lambda-layer
-  
-  ci-terraform-sqs-queue:
-    name: 🛠️ ci-terraform-sqs-queue
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Terraform Setup
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.10.5
-
-      - name: Terraform Init
-        run: terraform init
-        working-directory: aws/sqs-queue
-
-      - name: Terraform Validate
-        run: terraform validate
-        working-directory: aws/sqs-queue
-
-  ci-terraform-sns-topic:
-    name: 🛠️ ci-terraform-sns-topic
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Terraform Setup
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.10.5
-
-      - name: Terraform Init
-        run: terraform init
-        working-directory: aws/sns-topic
-
-      - name: Terraform Validate
-        run: terraform validate
-        working-directory: aws/sns-topic
-  
-  ci-terraform-lambda-function:
-    name: 🛠️ ci-terraform-lambda-function
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Terraform Setup
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.10.5
-
-      - name: Terraform Init
-        run: terraform init
-        working-directory: aws/lambda-function
-
-      - name: Terraform Validate
-        run: terraform validate
-        working-directory: aws/lambda-function
+  validate-catalog:
+    name: 🧩 catalog
+    uses: ./.github/workflows/catalog-validate.yml
 
   open-pr-to-main:
     name: 🔓 open-pr-to-main
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs:
-      - ci-terraform-dynamodb-table
-      - ci-terraform-iam-role
-      - ci-terraform-lambda-layer
-      - ci-terraform-sqs-queue
-      - ci-terraform-sns-topic
-      - ci-terraform-lambda-function
-
+      - validate-terraform
+      - validate-catalog
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
-      - name: Checkout
+      - name: 🔄 Checkout
         uses: actions/checkout@v4
 
       - name: 🔓 PR to main
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           base: main
           branch: ${{ github.ref }}
@@ -165,4 +50,3 @@ jobs:
           body-path: ".github/pull_request_template.md"
           labels: "github-bot 🤖"
           commit-message: "bot: automatic PR opening to main branch"
-          

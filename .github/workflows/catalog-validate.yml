@@ -1,23 +1,20 @@
-name: "📦 Deploy Catalog to GitHub Pages"
+name: "🔁 Reusable Catalog Validate"
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      node_version:
+        type: string
+        default: "20"
 
 permissions:
   contents: read
 
-concurrency:
-  group: pages
-  cancel-in-progress: false # never interrupt an in-flight deploy
-
 jobs:
-  build:
-    name: 🏗️ build
+  catalog:
+    name: 🧩 catalog validate
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,7 +22,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: ${{ inputs.node_version }}
           cache: npm
           cache-dependency-path: |
             scripts/package-lock.json
@@ -34,6 +31,10 @@ jobs:
       - name: Install catalog-builder deps
         working-directory: scripts
         run: npm ci
+
+      - name: Parser unit tests
+        working-directory: scripts
+        run: npm test
 
       - name: Build catalog.json
         working-directory: scripts
@@ -48,28 +49,12 @@ jobs:
         working-directory: web
         run: npm ci
 
+      - name: Typecheck
+        working-directory: web
+        run: npm run typecheck
+
       - name: Next.js static export
         working-directory: web
         env:
           NEXT_PUBLIC_BASE_PATH: /tfbox
         run: npm run build
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: web/out
-
-  deploy:
-    name: 🚀 deploy
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
-    steps:
-      - id: deploy
-        uses: actions/deploy-pages@v4

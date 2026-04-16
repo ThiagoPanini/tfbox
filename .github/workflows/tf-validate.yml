@@ -1,0 +1,46 @@
+name: "🔁 Reusable Terraform Validate"
+
+on:
+  workflow_call:
+    inputs:
+      terraform_version:
+        description: "Terraform version"
+        type: string
+        default: "1.10.5"
+      modules:
+        description: "JSON array of module dir names under aws/"
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: 🛠️ validate ${{ matrix.module }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        module: ${{ fromJSON(inputs.modules) }}
+    steps:
+      - name: 🔄 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⛏️ Terraform Setup
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+
+      - name: 🎨 Terraform fmt
+        run: terraform fmt -check -recursive
+        working-directory: aws/${{ matrix.module }}
+
+      - name: 🍃 Terraform Init
+        run: terraform init -backend=false
+        working-directory: aws/${{ matrix.module }}
+
+      - name: ✅ Terraform Validate
+        run: terraform validate
+        working-directory: aws/${{ matrix.module }}
