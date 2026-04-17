@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, ExternalLink, GitBranch } from "lucide-react";
 import { moduleById, moduleIds, catalog } from "@/lib/catalog";
 import { ModuleDetail } from "@/components/module-detail";
+import { ViewCounter } from "@/components/view-counter";
 
 export function generateStaticParams() {
   return moduleIds().map((id) => ({ id }));
@@ -30,7 +31,8 @@ export default async function ModulePage({ params }: { params: Promise<{ id: str
             <h1 className="text-3xl font-semibold tracking-tight">{m.name}</h1>
             <p className="mt-2 max-w-2xl text-sm text-muted">{m.summary}</p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <ViewCounter moduleId={m.id} mode="increment" className="chip" />
             <span className="chip"><GitBranch className="h-3 w-3" /> {m.version.module}</span>
             <span className="chip">terraform {m.version.terraform}</span>
             {m.version.providers.map((p) => (
