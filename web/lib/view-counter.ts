@@ -28,6 +28,22 @@ function keyFor(moduleId: string): string {
   return `mod-${moduleId.replace(/[^a-z0-9-]/gi, "-")}`;
 }
 
+function localKey(moduleId: string): string {
+  return `tfbox:count:${moduleId}`;
+}
+
+function readLocal(moduleId: string): number | null {
+  if (typeof window === "undefined") return null;
+  const v = localStorage.getItem(localKey(moduleId));
+  if (v === null) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function writeLocal(moduleId: string, n: number): void {
+  if (typeof window !== "undefined") localStorage.setItem(localKey(moduleId), String(n));
+}
+
 async function fetchJson(url: string, signal?: AbortSignal): Promise<number | null> {
   try {
     const r = await fetch(url, { signal, cache: "no-store" });
@@ -43,8 +59,18 @@ async function fetchJson(url: string, signal?: AbortSignal): Promise<number | nu
 export async function getCount(moduleId: string, signal?: AbortSignal): Promise<number | null> {
   const cached = memCache.get(moduleId);
   if (cached !== undefined) return cached;
+  // GET endpoint returns 204 — fall back to last known value from localStorage
+  const local = readLocal(moduleId);
+  if (local !== null) {
+    memCache.set(moduleId, local);
+    return local;
+  }
+  // Attempt live read anyway in case API behavior changes
   const n = await fetchJson(`${COUNTER_BASE}/${COUNTER_NAMESPACE}/${keyFor(moduleId)}`, signal);
-  if (n !== null) memCache.set(moduleId, n);
+  if (n !== null) {
+    memCache.set(moduleId, n);
+    writeLocal(moduleId, n);
+  }
   return n;
 }
 
@@ -57,6 +83,7 @@ export async function incrementCount(moduleId: string, signal?: AbortSignal): Pr
   const n = await fetchJson(`${COUNTER_BASE}/${COUNTER_NAMESPACE}/${keyFor(moduleId)}/up`, signal);
   if (n !== null) {
     memCache.set(moduleId, n);
+    writeLocal(moduleId, n);
   } else if (typeof window !== "undefined") {
     sessionStorage.removeItem(sessionKey);
   }
