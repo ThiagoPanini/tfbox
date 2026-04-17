@@ -14,7 +14,9 @@ export function ViewCounter({ moduleId, mode = "read", className }: Props) {
 
   useEffect(() => {
     const ac = new AbortController();
-    const fn = mode === "increment" ? incrementCount(moduleId) : getCount(moduleId, ac.signal);
+    const fn = mode === "increment"
+      ? incrementCount(moduleId, ac.signal)
+      : getCount(moduleId, ac.signal);
     fn.then((n) => setCount(n));
     return () => ac.abort();
   }, [moduleId, mode]);
