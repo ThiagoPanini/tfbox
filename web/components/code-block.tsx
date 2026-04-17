@@ -15,7 +15,6 @@ export async function CodeBlock({ code, label = "hcl", ariaLabel }: { code: stri
       </div>
       <div
         className="shiki-wrap overflow-x-auto px-4 py-3 text-[13px] leading-[1.55]"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>

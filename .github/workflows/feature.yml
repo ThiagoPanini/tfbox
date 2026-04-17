@@ -1,0 +1,91 @@
+name: "⚙️ Feature Branch CI"
+
+on:
+  push:
+    branches:
+      - feature**
+      - '[0-9].[0-9].x'
+      - 'v[0-9].[0-9].[0-9]'
+      - 'v[0-9].[0-9].x'
+      - docs**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-feature-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-terraform:
+    name: Terraform validation
+    uses: ./.github/workflows/reusable-modules-validation.yml
+    with:
+      modules: '["dynamodb-table","iam-role","lambda-layer","sqs-queue","sns-topic","lambda-function"]'
+
+  validate-catalog:
+    name: Catalog validation
+    uses: ./.github/workflows/reusable-catalog-validation.yml
+
+  open-pr-to-main:
+    name: Open pull request to main
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs:
+      - validate-terraform
+      - validate-catalog
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Open pull request to main
+        uses: actions/github-script@v8
+        env:
+          HEAD_BRANCH: ${{ github.ref_name }}
+        with:
+          script: |
+            const fs = require('fs');
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const base = 'main';
+            const headBranch = process.env.HEAD_BRANCH;
+            const head = `${owner}:${headBranch}`;
+
+            const { data: existing } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'open',
+              head,
+              base,
+            });
+
+            if (existing.length > 0) {
+              core.info(`Open PR already exists: #${existing[0].number}`);
+              return;
+            }
+
+            const body = fs.readFileSync('.github/pull_request_template.md', 'utf8');
+            const title = `pr(main): ${headBranch} -> ${base}`;
+
+            const { data: pr } = await github.rest.pulls.create({
+              owner,
+              repo,
+              title,
+              head: headBranch,
+              base,
+              body,
+            });
+
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: pr.number,
+              labels: ['github-bot'],
+            });
+
+            core.info(`Created PR #${pr.number}`);

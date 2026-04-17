@@ -33,7 +33,7 @@ export function HomeGrid({ modules }: { modules: Module[] }) {
           onChange={(e) => setQ(e.target.value)}
           placeholder="Filter modules by name, input, or AWS resource…"
           aria-label="Filter modules"
-          className="h-10 w-full rounded-lg border border-border bg-surface pl-9 pr-3 text-sm outline-none transition-colors focus:border-accent/60"
+          className="h-10 w-full rounded-lg border border-border bg-surface pl-9 pr-3 text-sm outline-hidden transition-colors focus:border-accent/60"
         />
       </div>
 

@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../tailwind.config.ts";
 
 @layer base {
   :root {
@@ -35,19 +34,21 @@
   *:focus-visible { @apply outline-2 outline-offset-2 outline-accent; }
 }
 
-@layer components {
-  .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-1 text-xs font-medium text-muted transition-colors;
-  }
-  .chip[data-active="true"] { @apply border-accent/60 bg-accent/10 text-accent; }
-  .card {
-    @apply relative rounded-xl border border-border bg-surface p-5 transition-all duration-150 ease-out will-change-transform;
-  }
-  .card:hover { @apply -translate-y-0.5 shadow-lift; border-color: hsl(var(--accent) / 0.5); }
-  .kbd {
-    @apply inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded border border-border bg-surface2 px-1 text-[10px] font-medium text-muted;
-  }
+@utility chip {
+  @apply inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-1 text-xs font-medium text-muted transition-colors;
 }
+
+@utility card {
+  @apply relative rounded-xl border border-border bg-surface p-5 transition-all duration-150 ease-out will-change-transform;
+}
+
+@utility kbd {
+  @apply inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-xs border border-border bg-surface2 px-1 text-[10px] font-medium text-muted;
+}
+
+/* State styles for custom utilities (can't go inside @utility) */
+.chip[data-active="true"] { @apply border-accent/60 bg-accent/10 text-accent; }
+.card:hover { @apply -translate-y-0.5 shadow-lift; border-color: hsl(var(--accent) / 0.5); }
 
 /* Shiki theme tweaks — keep background transparent so our card shell shows through. */
 pre.shiki, pre.shiki code { background: transparent !important; }

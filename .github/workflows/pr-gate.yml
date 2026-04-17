@@ -1,4 +1,4 @@
-name: "🚦 PR Gate + Release"
+name: "🚦 Pull Request Gate and Release"
 
 on:
   pull_request:
@@ -15,17 +15,17 @@ concurrency:
 
 jobs:
   validate-terraform:
-    name: 🧪 terraform
-    uses: ./.github/workflows/tf-validate.yml
+    name: Terraform validation
+    uses: ./.github/workflows/reusable-modules-validation.yml
     with:
-      modules: '["dynamodb-table","iam-role","lambda-layer","sqs-queue","sns-topic","lambda-function","glue-job"]'
+      modules: '["dynamodb-table","iam-role","lambda-layer","sqs-queue","sns-topic","lambda-function"]'
 
   validate-catalog:
-    name: 🧩 catalog
-    uses: ./.github/workflows/catalog-validate.yml
+    name: Catalog validation
+    uses: ./.github/workflows/reusable-catalog-validation.yml
 
   release:
-    name: 🚀 terraform-module-releaser
+    name: Release Terraform modules
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs:
@@ -37,14 +37,14 @@ jobs:
       contents: write       # push tags, create release, push wiki
       pull-requests: write  # comment on PR with release preview
     steps:
-      - name: 🔄 Checkout
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
-      - name: 🚀 Terraform Module Releaser
-        uses: techpivot/terraform-module-releaser@v1.4.1
+      - name: Run Terraform Module Releaser
+        uses: techpivot/terraform-module-releaser@v2
         with:
+          semver-mode: keywords
           default-first-tag: v0.0.1
           major-keywords: major change,breaking change
           minor-keywords: feat,feature
           patch-keywords: fix,hotfix,chore,docs,config,ci
-          terraform-docs-version: v0.19.0
