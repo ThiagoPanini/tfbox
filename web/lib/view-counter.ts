@@ -31,7 +31,7 @@ function keyFor(moduleId: string): string {
 async function fetchJson(url: string, signal?: AbortSignal): Promise<number | null> {
   try {
     const r = await fetch(url, { signal, cache: "no-store" });
-    if (!r.ok) return null;
+    if (r.status === 204 || !r.body) return null;
     const data = (await r.json()) as { count?: number; value?: number };
     const n = typeof data.count === "number" ? data.count : data.value;
     return typeof n === "number" ? n : null;

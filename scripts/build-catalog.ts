@@ -333,9 +333,12 @@ async function parseModule(modDir: string): Promise<ModuleEntry> {
   }));
 
   // ---- Module version from git tag (prefix "<name>/v" or generic "v")
-  const moduleVersion =
-    git(`describe --tags --abbrev=0 --match "${name}/v*"`, "") ||
-    git(`describe --tags --abbrev=0 --match "v*"`, "unversioned");
+  const moduleVersion = (() => {
+    const specific = git(`tag -l "${name}/v*" --sort=-version:refname --merged HEAD`).split('\n')[0];
+    if (specific) return specific.replace(`${name}/`, "");
+    const generic = git(`tag -l "v*" --sort=-version:refname --merged HEAD`).split('\n')[0];
+    return generic ? generic.replace(/^v/, "") : "unversioned";
+  })();
 
   // ---- Maintainers from git log (top 3 by commit count in this dir)
   const maintainersRaw = git(`log --format=%an -- ${relPath}`).split("\n").filter(Boolean);
