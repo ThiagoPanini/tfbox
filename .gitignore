@@ -2,9 +2,6 @@
 **tmp/
 **.ipynb
 .vscode
-.agents
-.serena
-.claude
 
 # Local .terraform directories
 **/.terraform/*

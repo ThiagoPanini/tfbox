@@ -1,0 +1,25 @@
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @media (prefers-color-scheme: dark) {
+        .bg { fill: #0d1a1e; }
+      }
+      @media (prefers-color-scheme: light) {
+        .bg { fill: #ffffff; }
+      }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="128" height="128" class="bg" />
+
+  <!-- Terraform logo: three stacked triangles, orange (#ff6b35) -->
+  <!-- Top triangle -->
+  <polygon points="64,24 88,40 40,40" fill="#ff6b35" />
+
+  <!-- Middle triangle -->
+  <polygon points="64,50 96,68 32,68" fill="#ff6b35" opacity="0.9" />
+
+  <!-- Bottom triangle -->
+  <polygon points="64,76 104,96 24,96" fill="#ff6b35" opacity="0.85" />
+</svg>

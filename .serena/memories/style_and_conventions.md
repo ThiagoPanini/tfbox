@@ -1,0 +1,3 @@
+- Keep changes minimal and focused; preserve existing YAML/Terraform/TypeScript style.
+- GitHub Actions naming prefers plain descriptive workflow/job/step names without emoji.
+- Reusable workflows use workflow_call and are referenced locally from top-level files in .github/workflows.
