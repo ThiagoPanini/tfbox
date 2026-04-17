@@ -44,17 +44,8 @@ export async function getCount(moduleId: string, signal?: AbortSignal): Promise<
 }
 
 export async function incrementCount(moduleId: string, signal?: AbortSignal): Promise<number | null> {
-  const sessionKey = `tfbox:hit:${moduleId}`;
-  if (typeof window !== "undefined" && sessionStorage.getItem(sessionKey)) {
-    return getCount(moduleId, signal);
-  }
-  if (typeof window !== "undefined") sessionStorage.setItem(sessionKey, "1");
   const n = await fetchJson(`${COUNTER_BASE}/hit/${COUNTER_NAMESPACE}/${keyFor(moduleId)}`, signal);
-  if (n !== null) {
-    memCache.set(moduleId, n);
-  } else if (typeof window !== "undefined") {
-    sessionStorage.removeItem(sessionKey);
-  }
+  if (n !== null) memCache.set(moduleId, n);
   return n;
 }
 

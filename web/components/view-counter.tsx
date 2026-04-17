@@ -13,12 +13,23 @@ export function ViewCounter({ moduleId, mode = "read", className }: Props) {
   const [count, setCount] = useState<number | null | undefined>(undefined);
 
   useEffect(() => {
+    let cancelled = false;
+    if (mode === "increment") {
+      incrementCount(moduleId).then((n) => {
+        if (!cancelled) setCount(n);
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
     const ac = new AbortController();
-    const p = mode === "increment"
-      ? incrementCount(moduleId, ac.signal)
-      : getCount(moduleId, ac.signal);
-    p.then((n) => setCount(n));
-    return () => ac.abort();
+    getCount(moduleId, ac.signal).then((n) => {
+      if (!cancelled) setCount(n);
+    });
+    return () => {
+      cancelled = true;
+      ac.abort();
+    };
   }, [moduleId, mode]);
 
   return (
