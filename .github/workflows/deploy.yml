@@ -1,4 +1,4 @@
-name: "Deploy Catalog to GitHub Pages"
+name: "🚀 Deploy Catalog to GitHub Pages"
 
 on:
   push:

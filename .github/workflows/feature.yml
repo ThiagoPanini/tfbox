@@ -1,4 +1,4 @@
-name: "Feature Branch CI"
+name: "⚙️ Feature Branch CI"
 
 on:
   push:
@@ -19,13 +19,13 @@ concurrency:
 jobs:
   validate-terraform:
     name: Terraform validation
-    uses: ./.github/workflows/tf-validate.yml
+    uses: ./.github/workflows/reusable-modules-validation.yml
     with:
       modules: '["dynamodb-table","iam-role","lambda-layer","sqs-queue","sns-topic","lambda-function"]'
 
   validate-catalog:
     name: Catalog validation
-    uses: ./.github/workflows/catalog-validate.yml
+    uses: ./.github/workflows/reusable-catalog-validation.yml
 
   open-pr-to-main:
     name: Open pull request to main

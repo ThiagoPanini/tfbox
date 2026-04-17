@@ -1,4 +1,4 @@
-name: "Pull Request Gate and Release"
+name: "🚦 Pull Request Gate and Release"
 
 on:
   pull_request:
@@ -16,13 +16,13 @@ concurrency:
 jobs:
   validate-terraform:
     name: Terraform validation
-    uses: ./.github/workflows/tf-validate.yml
+    uses: ./.github/workflows/reusable-modules-validation.yml
     with:
-      modules: '["dynamodb-table","iam-role","lambda-layer","sqs-queue","sns-topic","lambda-function","glue-job"]'
+      modules: '["dynamodb-table","iam-role","lambda-layer","sqs-queue","sns-topic","lambda-function"]'
 
   validate-catalog:
     name: Catalog validation
-    uses: ./.github/workflows/catalog-validate.yml
+    uses: ./.github/workflows/reusable-catalog-validation.yml
 
   release:
     name: Release Terraform modules
@@ -48,4 +48,3 @@ jobs:
           major-keywords: major change,breaking change
           minor-keywords: feat,feature
           patch-keywords: fix,hotfix,chore,docs,config,ci
-          terraform-docs-version: v0.19.0
