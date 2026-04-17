@@ -56,28 +56,18 @@ async function fetchJson(url: string, signal?: AbortSignal): Promise<number | nu
   }
 }
 
-export async function getCount(moduleId: string, signal?: AbortSignal): Promise<number | null> {
+export function getCount(moduleId: string): number | null {
   const cached = memCache.get(moduleId);
   if (cached !== undefined) return cached;
-  // GET endpoint returns 204 — fall back to last known value from localStorage
   const local = readLocal(moduleId);
-  if (local !== null) {
-    memCache.set(moduleId, local);
-    return local;
-  }
-  // Attempt live read anyway in case API behavior changes
-  const n = await fetchJson(`${COUNTER_BASE}/${COUNTER_NAMESPACE}/${keyFor(moduleId)}`, signal);
-  if (n !== null) {
-    memCache.set(moduleId, n);
-    writeLocal(moduleId, n);
-  }
-  return n;
+  if (local !== null) memCache.set(moduleId, local);
+  return local;
 }
 
 export async function incrementCount(moduleId: string, signal?: AbortSignal): Promise<number | null> {
   const sessionKey = `tfbox:hit:${moduleId}`;
   if (typeof window !== "undefined" && sessionStorage.getItem(sessionKey)) {
-    return getCount(moduleId, signal);
+    return getCount(moduleId);
   }
   if (typeof window !== "undefined") sessionStorage.setItem(sessionKey, "1");
   const n = await fetchJson(`${COUNTER_BASE}/${COUNTER_NAMESPACE}/${keyFor(moduleId)}/up`, signal);
