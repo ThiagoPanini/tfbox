@@ -332,11 +332,11 @@ async function parseModule(modDir: string): Promise<ModuleEntry> {
     version: meta.version ?? "",
   }));
 
-  // ---- Module version from git tag (prefix "<name>/v" or generic "v")
+  // ---- Module version from git tag (prefix "aws/<name>/v" or generic "v")
   const moduleVersion = (() => {
-    const specific = git(`tag -l "${name}/v*" --sort=-version:refname --merged HEAD`).split('\n')[0];
-    if (specific) return specific.replace(`${name}/`, "");
-    const generic = git(`tag -l "v*" --sort=-version:refname --merged HEAD`).split('\n')[0];
+    const specific = git(`tag -l "aws/${name}/v*" --sort=-version:refname`).split('\n')[0];
+    if (specific) return specific.replace(`aws/${name}/v`, "");
+    const generic = git(`tag -l "v*" --sort=-version:refname`).split('\n')[0];
     return generic ? generic.replace(/^v/, "") : "unversioned";
   })();
 
