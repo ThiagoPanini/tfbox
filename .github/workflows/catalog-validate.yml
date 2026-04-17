@@ -1,4 +1,4 @@
-name: "🔁 Reusable Catalog Validate"
+name: "Reusable Catalog Validation"
 
 on:
   workflow_call:
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   catalog:
-    name: 🧩 catalog validate
+    name: Catalog validation
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -28,32 +28,32 @@ jobs:
             scripts/package-lock.json
             web/package-lock.json
 
-      - name: Install catalog-builder deps
+      - name: Install catalog builder dependencies
         working-directory: scripts
         run: npm ci
 
-      - name: Build catalog.json
+      - name: Build catalog
         working-directory: scripts
         run: npm run build
 
-      - name: Parser unit tests
+      - name: Run parser unit tests
         working-directory: scripts
         run: npm test
 
-      - name: Copy catalog to web/public
+      - name: Copy catalog to web public
         run: |
           mkdir -p web/public
           cp catalog.json web/public/catalog.json
 
-      - name: Install web deps
+      - name: Install web dependencies
         working-directory: web
         run: npm ci
 
-      - name: Typecheck
+      - name: Run typecheck
         working-directory: web
         run: npm run typecheck
 
-      - name: Next.js static export
+      - name: Build Next.js static export
         working-directory: web
         env:
           NEXT_PUBLIC_BASE_PATH: /tfbox

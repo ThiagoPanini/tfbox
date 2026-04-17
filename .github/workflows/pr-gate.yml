@@ -1,4 +1,4 @@
-name: "🚦 PR Gate + Release"
+name: "Pull Request Gate and Release"
 
 on:
   pull_request:
@@ -15,17 +15,17 @@ concurrency:
 
 jobs:
   validate-terraform:
-    name: 🧪 terraform
+    name: Terraform validation
     uses: ./.github/workflows/tf-validate.yml
     with:
       modules: '["dynamodb-table","iam-role","lambda-layer","sqs-queue","sns-topic","lambda-function","glue-job"]'
 
   validate-catalog:
-    name: 🧩 catalog
+    name: Catalog validation
     uses: ./.github/workflows/catalog-validate.yml
 
   release:
-    name: 🚀 terraform-module-releaser
+    name: Release Terraform modules
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs:
@@ -37,10 +37,10 @@ jobs:
       contents: write       # push tags, create release, push wiki
       pull-requests: write  # comment on PR with release preview
     steps:
-      - name: 🔄 Checkout
+      - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: 🚀 Terraform Module Releaser
+      - name: Run Terraform Module Releaser
         uses: techpivot/terraform-module-releaser@v2
         with:
           semver-mode: keywords

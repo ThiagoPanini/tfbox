@@ -1,4 +1,4 @@
-name: "⚙️ CI Feature Branch"
+name: "Feature Branch CI"
 
 on:
   push:
@@ -18,17 +18,17 @@ concurrency:
 
 jobs:
   validate-terraform:
-    name: 🧪 terraform
+    name: Terraform validation
     uses: ./.github/workflows/tf-validate.yml
     with:
-      modules: '["dynamodb-table","iam-role","lambda-layer","sqs-queue","sns-topic","lambda-function","glue-job"]'
+      modules: '["dynamodb-table","iam-role","lambda-layer","sqs-queue","sns-topic","lambda-function"]'
 
   validate-catalog:
-    name: 🧩 catalog
+    name: Catalog validation
     uses: ./.github/workflows/catalog-validate.yml
 
   open-pr-to-main:
-    name: 🔓 open-pr-to-main
+    name: Open pull request to main
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs:
@@ -38,15 +38,15 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - name: 🔄 Checkout
+      - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: 🔓 PR to main
+      - name: Open pull request to main
         uses: peter-evans/create-pull-request@v8.1.1
         with:
           base: main
           branch: ${{ github.ref_name }}
           title: "pr(main): ${{ github.ref_name }} -> main"
           body-path: ".github/pull_request_template.md"
-          labels: "github-bot 🤖"
+          labels: "github-bot"
           commit-message: "bot: automatic PR opening to main branch"
