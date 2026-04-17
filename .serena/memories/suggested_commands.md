@@ -1,0 +1,4 @@
+- Root: git status, git diff
+- Catalog builder: cd scripts && npm ci && npm run build && npm test
+- Web: cd web && npm ci && npm run typecheck && npm run lint && npm test
+- CI-sensitive area: validate workflow references under .github/workflows after editing GitHub Actions files.

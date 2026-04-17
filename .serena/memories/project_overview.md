@@ -1,0 +1,3 @@
+- Purpose: tfbox is a curated collection of reusable Terraform AWS modules plus a generated web catalog.
+- Stack: Terraform modules under aws/, TypeScript catalog builder under scripts/, Next.js web app under web/, GitHub Actions for CI/release/deploy.
+- CI note: reusable GitHub Actions workflows must stay at the top level of .github/workflows; subdirectories are not supported for local reusable workflow references.
