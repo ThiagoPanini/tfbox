@@ -31,7 +31,7 @@ function keyFor(moduleId: string): string {
 async function fetchJson(url: string, signal?: AbortSignal): Promise<number | null> {
   try {
     const r = await fetch(url, { signal, cache: "no-store" });
-    if (r.status === 204 || !r.body) return null;
+    if (!r.ok || r.status === 204 || !r.body) return null;
     const data = (await r.json()) as { count?: number; value?: number };
     const n = typeof data.count === "number" ? data.count : data.value;
     return typeof n === "number" ? n : null;
@@ -48,15 +48,17 @@ export async function getCount(moduleId: string, signal?: AbortSignal): Promise<
   return n;
 }
 
-export async function incrementCount(moduleId: string): Promise<number | null> {
+export async function incrementCount(moduleId: string, signal?: AbortSignal): Promise<number | null> {
   const sessionKey = `tfbox:hit:${moduleId}`;
   if (typeof window !== "undefined" && sessionStorage.getItem(sessionKey)) {
-    return getCount(moduleId);
+    return getCount(moduleId, signal);
   }
-  const n = await fetchJson(`${COUNTER_BASE}/${COUNTER_NAMESPACE}/${keyFor(moduleId)}/up`);
+  if (typeof window !== "undefined") sessionStorage.setItem(sessionKey, "1");
+  const n = await fetchJson(`${COUNTER_BASE}/${COUNTER_NAMESPACE}/${keyFor(moduleId)}/up`, signal);
   if (n !== null) {
     memCache.set(moduleId, n);
-    if (typeof window !== "undefined") sessionStorage.setItem(sessionKey, "1");
+  } else if (typeof window !== "undefined") {
+    sessionStorage.removeItem(sessionKey);
   }
   return n;
 }
