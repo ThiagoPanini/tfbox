@@ -6,6 +6,11 @@
       "sourceType": "github",
       "computedHash": "a4733318997e024c77f9bc585581d924d8444d45295e21ef0d77bd569fcbafd9"
     },
+    "ai-dev-setup": {
+      "source": "thiagopanini/aidriven-resources",
+      "sourceType": "github",
+      "computedHash": "f86b7977252f9c77f05d31107154952544b4ff91362f00ffbf26c0d210a49254"
+    },
     "caveman": {
       "source": "JuliusBrussee/caveman",
       "sourceType": "github",
