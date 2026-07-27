@@ -9,7 +9,7 @@ Claude Code instructions for **tfbox**. Read [AGENTS.md](./AGENTS.md) first — 
 - **Single `.tf` edit in one module** → `terraform fmt -check -recursive`, `init -backend=false`, `validate` for that module; then `cd scripts && npm run build && npm test`.
 - **New/renamed module** → full cross-stack run (AGENTS.md §5 full gate + §11). Update hardcoded `modules` array in `pr-checks.yml` **and** `pr-gate.yml`.
 - **Scripts-only** → `npm run typecheck && npm test && npm run build` in `scripts/`.
-- **Web UI change** → `npm run typecheck && npm run build` in `web/`. Regenerate catalog only if consumption changed. (`npm run lint` is broken on `main` — see AGENTS.md §5.)
+- **Web UI change** → `npm run typecheck && npm run build` in `web/`. Regenerate catalog only if consumption changed. (`npm run lint` is broken on `main`; see AGENTS.md §5.)
 - **Workflow change** → syntax-only check (no local runner); read related reusable workflow and call sites.
 
 Never skip `npm run build` in `web/` after non-trivial changes — static export fails loudly on RSC/serialization issues that `typecheck` alone misses.
@@ -50,4 +50,4 @@ Don't invent prefixes; releaser ignores unknown ones.
 
 Skills, subagents, commands, hook logic, the permission list and the statusline are installed **globally on the machine** and are not versioned in this repo. `.claude/skills/`, `.claude/settings.local.json`, `.agents/`, `skills-lock.json` and `.serena/` are all gitignored: a tool may recreate them locally, and they must not come back into git.
 
-The one exception is a **marker file** declaring opt-in to a global mechanism — `.claude/context-economy-protocol.md` is versioned on purpose, because a marker is a declaration and the logic it activates stays outside.
+The one exception is a **marker file** declaring opt-in to a global mechanism: `.claude/context-economy-protocol.md` is versioned on purpose, because a marker is a declaration and the logic it activates stays outside.

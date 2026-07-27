@@ -78,7 +78,7 @@ npm run build      # next build; catches static-export errors
 # optional: npm run test:e2e (playwright)
 ```
 
-**`npm run lint` is broken on `main`** — ESLint 10 (bumped by Dependabot) is incompatible with the `eslint-plugin-react` bundled inside `eslint-config-next`, and it dies with `TypeError: ... getFilename is not a function` before evaluating a single rule. It is therefore out of both gates. Fixing the dependency and turning the step back on is separate work.
+**`npm run lint` is broken on `main`.** ESLint 10 (bumped by Dependabot) is incompatible with the `eslint-plugin-react` bundled inside `eslint-config-next`, and it dies with `TypeError: ... getFilename is not a function` before evaluating a single rule. It is therefore out of both gates. Fixing the dependency and turning the step back on is separate work.
 
 `npm test` in `web/` is also unusable as-is: there are no unit tests, and `vitest run` collects `e2e/smoke.spec.ts`, which is a Playwright spec. Use `npm run test:e2e` for that file.
 
@@ -98,13 +98,13 @@ cp catalog.json web/public/catalog.json
 
 Full detail, with the reason behind each choice: [`docs/agents/workflow.md`](docs/agents/workflow.md).
 
-- `.github/workflows/pr-checks.yml` — **gate 2**. Runs on push to the work branches. Two surface legs (`checks-terraform`, `checks-node`), a fixed-id `checks` rollup job that aggregates them, `security` (secret scan, from the org's shared CI, pinned by exact tag), and the automatic PR. `checks` and `security` are the two required status checks of the whole org; their names are fixed by contract and must not be renamed.
-- `.github/workflows/pr-gate.yml` — runs on PRs to `main`, including `closed`. Re-validates and **cuts the release**. Uses `techpivot/terraform-module-releaser@v2` which **parses commit subjects** for semver keywords:
+- `.github/workflows/pr-checks.yml`, **gate 2**. Runs on push to the work branches. Two surface legs (`checks-terraform`, `checks-node`), a fixed-id `checks` rollup job that aggregates them, `security` (secret scan, from the org's shared CI, pinned by exact tag), and the automatic PR. `checks` and `security` are the two required status checks of the whole org; their names are fixed by contract and must not be renamed.
+- `.github/workflows/pr-gate.yml`: runs on PRs to `main`, including `closed`. Re-validates and **cuts the release**. Uses `techpivot/terraform-module-releaser@v2` which **parses commit subjects** for semver keywords:
   - **major**: `major change`, `breaking change`
   - **minor**: `feat`, `feature`
   - **patch**: `fix`, `hotfix`, `chore`, `docs`, `config`, `ci`
 
-  Use these exact prefixes — `commitlint.config.mjs` enforces exactly this list at commit time, because a type outside it ships a change with **no version bump at all**. Module version tags: `aws/<name>/vX.Y.Z`.
+  Use these exact prefixes. `commitlint.config.mjs` enforces exactly this list at commit time, because a type outside it ships a change with **no version bump at all**. Module version tags: `aws/<name>/vX.Y.Z`.
 - `.github/workflows/deploy.yml` — runs on `main` push → builds + deploys `web/out/` to GitHub Pages.
 - Reusable: `reusable-modules-validation.yml` (per-module matrix: `fmt -check -recursive`, `init -backend=false`, `validate`), `reusable-catalog-validation.yml` (builds catalog, runs parser tests, builds web).
 
@@ -113,9 +113,9 @@ Full detail, with the reason behind each choice: [`docs/agents/workflow.md`](doc
 - **Gate 1 is local, before the commit:** [`lefthook.yml`](lefthook.yml) runs `terraform fmt -check` on staged `.tf`, `gitleaks` on the staged diff, and `commitlint` on the message. Every one of those depends only on **machine equipment** installed globally (`lefthook`, `gitleaks`, `terraform`, the Node runtime behind `npx`); this repo versions only the declaration that it opts in. Node checks that need per-project `node_modules` deliberately live in gate 2, where the install is part of the job.
 - **Agent equipment is not versioned here.** Skills, subagents, commands and hook logic live in one place only, the global install. What *is* versioned is a marker file declaring opt-in to a global mechanism (`.claude/context-economy-protocol.md`).
 - **Generated files — never hand-edit:** `catalog.json` (root, gitignored), `web/public/catalog.json`, `web/out/`, `web/.next/`.
-- **Commit subject prefix** must match a releaser keyword (§6), enforced by `commitlint.config.mjs`. Format: `feat(<module>): add event source mapping`.
-- **Branch naming**: `feature/<slug>`, `docs/<slug>`, `v<major>.<minor>.x`, `v<major>.<minor>.<patch>`, or a conventional prefix (`feat/`, `fix/`, `chore/`, `config/`, `ci/`, `refactor/`, `test/`). **CI only triggers on the patterns listed in `pr-checks.yml`** — a branch outside them publishes no status check, and under the org ruleset its PR hangs waiting for a check nobody will publish.
-- **PR title**: the automatic PR uses the **first commit subject** of the branch, so it must already obey the releaser contract — under squash merge that title becomes the commit message landing on `main`. Manual PRs follow `.github/pull_request_template.md`. (Older PRs in the history use `pr(main): <branch> -> main`, from the workflow `pr-checks.yml` replaced.)
+- **Commit subject prefix** must match a releaser keyword (§6), enforced by `commitlint.config.mjs`. Format: `feat(<module>): add event source mapping`. Note this list is **narrower** than the branch-prefix list below, on purpose: a `refactor/` branch is fine and triggers CI normally, but its commits still carry a type from the releaser's list (usually `chore:`), because a type outside it ships a change with no version bump.
+- **Branch naming**: `feature/<slug>`, `docs/<slug>`, `v<major>.<minor>.x`, `v<major>.<minor>.<patch>`, or a conventional prefix (`feat/`, `fix/`, `chore/`, `config/`, `ci/`, `refactor/`, `test/`). **CI only triggers on the patterns listed in `pr-checks.yml`**: a branch outside them publishes no status check, and under the org ruleset its PR hangs waiting for a check nobody will publish.
+- **PR title**: the automatic PR uses the **most recent commit subject** of the branch (the shared `open-pr` workflow reads `git log FETCH_HEAD..HEAD | head -n1`, and `git log` is newest-first). It must therefore already obey the releaser contract: under squash merge that title becomes the commit message landing on `main`. Its **body** is a fixed one-liner from the shared workflow, not `.github/pull_request_template.md`; the template still applies to manually opened PRs. (Older PRs in the history use `pr(main): <branch> -> main`, from the `feature.yml` that `pr-checks.yml` replaced.)
 - **Secrets**: never commit `*.tfvars`, `*.tfstate*`, `.env*`. Enforced by `.gitignore`.
 
 ## 8. Terraform module conventions (`aws/<name>/`)

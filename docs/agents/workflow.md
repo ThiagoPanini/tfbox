@@ -41,7 +41,7 @@ Aqui as pernas são duas, e as duas são **locais**:
 
 Manter perna local é caminho previsto, não desvio: o `life-under-control` faz o mesmo com a perna Python dele, porque `services` de job não é parametrizável por input de `workflow_call`.
 
-O que **não** é local é o scan de segredos: `security-scan` chama o [`security.yml` compartilhado](https://github.com/panlabs-tech/.github/blob/main/.github/workflows/security.yml), pinado por tag exata. É por essa referência que este repo deixa de ser mais um YAML copiado que deriva sozinho.
+O que **não** é local é o scan de segredos: `security-scan` chama o [`security.yml` compartilhado](https://github.com/panlabs-tech/.github/blob/v1.0.0/.github/workflows/security.yml), pinado por tag exata. É por essa referência que este repo deixa de ser mais um YAML copiado que deriva sozinho.
 
 Duas armadilhas moram nesse desenho, e as duas já morderam alguém:
 
@@ -63,6 +63,8 @@ Neste repo a mensagem de commit não é só convenção: ela é a **entrada do r
 A consequência é dura e fácil de não notar: um commit de tipo **fora** dessa lista muda código e **não gera versão nenhuma**. `refactor:` num módulo publica a mudança sem tag que a nomeie, e nada acusa.
 
 É por isso que o `type-enum` do [`commitlint.config.mjs`](../../commitlint.config.mjs) é exatamente essa lista, e não a lista default do Conventional Commits. O portão local recusa no commit o tipo que o release ignoraria depois, que é o único momento em que a correção ainda é barata.
+
+**Prefixo de branch e tipo de commit são dois eixos, e as duas listas divergem de propósito.** A lista de gatilho é deliberadamente **mais larga** que o `type-enum`: uma branch `refactor/` ou `test/` dispara a CI normalmente, e os commits dela levam um tipo da lista de cima (`chore:` costuma ser o certo). A assimetria segue a assimetria dos danos. Branch que não dispara CI pendura o PR para sempre, então o gatilho erra para o lado de aceitar; tipo fora da lista publica mudança sem versão, então o `type-enum` erra para o lado de recusar.
 
 Tags de módulo saem como `aws/<nome>/vX.Y.Z`.
 
