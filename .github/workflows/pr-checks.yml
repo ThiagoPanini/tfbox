@@ -1,0 +1,138 @@
+name: pr-checks
+
+# O portão 2 deste repo: o que decide se um PR pode mergear. Dispara no push da
+# branch de trabalho, e é ele que publica os dois status checks de nome fixo que
+# o ruleset da org exige (`checks` e `security`).
+#
+# Substitui o `feature.yml`, que fazia a mesma coisa com nome próprio: as duas
+# pernas de validação continuam sendo os mesmos reusable workflows locais, e o
+# PR automático passou a vir da esteira compartilhada. O `pr-gate.yml` continua
+# existindo e não foi absorvido: ele precisa do evento `pull_request: closed`
+# para cortar o release, que um workflow de push não recebe.
+#
+# Ver docs/agents/workflow.md para o contrato de nomes de status check e as duas
+# armadilhas que o desenho ingênuo dele tem.
+
+on:
+  push:
+    branches:
+      # A convenção histórica deste repo, mantida: branch fora destes padrões
+      # não dispara checagem nenhuma, e sob o ruleset um PR sem os required
+      # checks publicados não fica vermelho, fica pendurado para sempre.
+      - "feature**"
+      - "docs**"
+      - "[0-9].[0-9].x"
+      - "v[0-9].[0-9].[0-9]"
+      - "v[0-9].[0-9].x"
+      # Os prefixos convencionais, que é como um agente nomeia branch de issue.
+      - "feat/**"
+      - "fix/**"
+      - "chore/**"
+      - "config/**"
+      - "ci/**"
+      - "refactor/**"
+      - "test/**"
+      # A ferramenta de worktree do agente gera branch com hífen, não com barra.
+      - "worktree/**"
+      - "worktree-**"
+      # A raiz de branch do Dependabot, que não é configurável. Sem esta linha o
+      # PR do robô não dispara checagem nenhuma e nunca alcança condição de
+      # merge: a falha mais silenciosa possível, porque todo o resto pareceria
+      # configurado.
+      - "dependabot/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # A perna Terraform. Local, e não compartilhada, porque Terraform existe em um
+  # repo só da frota: um reusable workflow de um consumidor único é abstração
+  # sem retorno. A lista de módulos é a mesma de pr-gate.yml, e as duas mudam
+  # juntas quando nasce um módulo (não há descoberta automática).
+  checks-terraform:
+    name: checks-terraform
+    uses: ./.github/workflows/reusable-modules-validation.yml
+    with:
+      modules: '["dynamodb-table","iam-role","lambda-layer","sqs-queue","sns-topic","lambda-function"]'
+
+  # A perna Node. Local pelo motivo oposto ao da de cima: a superfície Node
+  # deste repo tem dois manifestos com dependência de ordem entre eles, porque
+  # `web/` não compila antes de `scripts/` gerar o catálogo. O
+  # `checks-node.yml` compartilhado roda numa pasta só, sem passo entre a
+  # instalação e o lint, e não tem como expressar essa ordem. Perna local é
+  # caminho previsto: o `life-under-control` faz o mesmo com a dele.
+  checks-node:
+    name: checks-node
+    uses: ./.github/workflows/reusable-catalog-validation.yml
+
+  # O rollup: id fixo, `needs` sobre as pernas por superfície deste repo.
+  # `if: always()` mais checagem explícita do resultado, para que uma perna
+  # reprovada **reprove** o rollup em vez de pulá-lo. Pulado não satisfaz um
+  # required check do jeito que reprovado faz, mas também não bloqueia.
+  checks:
+    name: checks
+    needs: [checks-terraform, checks-node]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: agregar o resultado das pernas por superfície
+        run: |
+          set -euo pipefail
+          failed=0
+          for leg in "checks-terraform:${{ needs.checks-terraform.result }}" \
+                     "checks-node:${{ needs.checks-node.result }}"; do
+            name="${leg%%:*}"
+            result="${leg#*:}"
+            if [[ "$result" != "success" && "$result" != "skipped" ]]; then
+              echo "::error::${name} reprovou (${result})."
+              failed=1
+            fi
+          done
+          exit "$failed"
+
+  # O scan de segredos vem da CI compartilhada, pinado por tag exata e nunca por
+  # tag flutuante: uma flutuante reintroduziria a quebra simultânea de todos os
+  # consumidores que o versionamento existe para evitar. O Dependabot bumpa esta
+  # referência como bumpa a de qualquer action.
+  security-scan:
+    name: security-scan
+    uses: panlabs-tech/.github/.github/workflows/security.yml@v1.0.0
+
+  # Fachada em volta de security-scan, não um rollup de superfícies. Existe
+  # porque um job que chama reusable workflow via `uses:` publica o check como
+  # "<job do caller> / <job do chamado>", nunca só com o nome do job do caller,
+  # e não há opção para suprimir. Sem esta fachada o required check `security`
+  # nunca existiria com esse nome exato.
+  security:
+    name: security
+    needs: [security-scan]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: agregar o resultado do scan
+        run: |
+          set -euo pipefail
+          result="${{ needs.security-scan.result }}"
+          if [[ "$result" != "success" && "$result" != "skipped" ]]; then
+            echo "::error::security-scan reprovou (${result})."
+            exit 1
+          fi
+
+  # O PR automático fecha a esteira. Padronizado, mas deliberadamente **não**
+  # required: exigi-lo como condição de merge seria circular, é o job que cria o
+  # PR. O Dependabot já abre o próprio, então rodar na branch dele seria ruído
+  # no melhor caso e corrida no pior.
+  open-pr:
+    name: open-pr
+    needs: [checks, security]
+    if: github.actor != 'dependabot[bot]'
+    uses: panlabs-tech/.github/.github/workflows/open-pr.yml@v1.0.0
+    permissions:
+      contents: read
+      pull-requests: write

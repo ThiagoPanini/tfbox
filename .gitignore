@@ -48,3 +48,26 @@ web/node_modules/
 web/.next/
 web/out/
 catalog.json
+
+# Equipamento de agente: skills, subagentes, comandos e hooks moram num lugar
+# só, o global, instalados na máquina. O repo não versiona nenhum deles, e o que
+# está listado aqui é o que uma ferramenta recria sozinha ao ser usada. O que
+# continua versionado é o *marker* de adesão a um mecanismo global
+# (.claude/context-economy-protocol.md), que é declaração e não lógica.
+.claude/skills/
+.claude/agents/
+.claude/commands/
+.claude/hooks/
+.claude/settings.json
+.claude/settings.local.json
+.claude/worktrees/
+.agents/
+skills-lock.json
+
+# Configuração de ferramenta fora da toolchain decidida
+.serena/
+.codex/
+.cursor/
+.windsurf/
+.continue/
+.aider
