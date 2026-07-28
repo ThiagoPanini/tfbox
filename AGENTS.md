@@ -20,17 +20,25 @@ Terraform modules are the product; `scripts/` + `web/` render documentation from
 aws/<module>/          # product — HCL modules (dynamodb-table, iam-role, lambda-function, lambda-layer, sns-topic, sqs-queue)
 scripts/               # catalog builder (TS) + parser tests
 web/                   # Next.js static site
-.github/workflows/     # feature.yml, pr-gate.yml, deploy.yml, reusable-*.yml
+docs/agents/           # how an agent works in this repo (tracker, labels, workflow, domain, design)
+.github/workflows/     # pr-checks.yml, pr-gate.yml, deploy.yml, reusable-*.yml
+.node-version          # the single declaration of the Node runtime version
+lefthook.yml           # gate 1: local, pre-commit
+commitlint.config.mjs  # commit message standard, read by the commit-msg hook
 catalog.json           # build artifact (generated, gitignored)
 catalog.schema.json    # schema for catalog.json
 DESIGN.md              # web app design spec
+LICENSE                # MIT
 README.md              # public-facing README
 ```
+
+This repo follows the **panlabs anatomy**, defined in [`panlabs-tech/.github`](https://github.com/panlabs-tech/.github). A compliance checker measures it against that definition; the files it requires and the reason for each are in [`docs/agents/`](docs/agents/).
 
 ## 3. Package manager & Node
 
 - **CI uses `npm ci`** (`scripts/` + `web/` ship `package-lock.json`). Use `npm` locally. Sub-READMEs mention `pnpm` — stale; prefer `npm` to match CI.
-- Node 20 (CI). TypeScript `^6`.
+- **Node version is declared once**, in the root `.node-version`. CI reads it (`node-version-file:`), and so does the machine's runtime manager. Never hardcode a version in a workflow; change the file.
+- TypeScript `^6`.
 - No root npm scripts. Always `cd scripts` or `cd web` first.
 
 ## 4. Setup
@@ -52,7 +60,7 @@ terraform -chdir=aws/<module> init -backend=false
 terraform -chdir=aws/<module> validate
 cd scripts && npm run build && npm test
 ```
-New `aws/<name>/` dir → update `modules` JSON array in **both** `.github/workflows/pr-gate.yml` and `.github/workflows/feature.yml` (hardcoded, no auto-discovery).
+New `aws/<name>/` dir → update `modules` JSON array in **both** `.github/workflows/pr-checks.yml` and `.github/workflows/pr-gate.yml` (hardcoded, no auto-discovery).
 
 ### Changed `scripts/`
 ```bash
@@ -65,11 +73,14 @@ npm run build      # regenerates catalog.json
 ### Changed `web/`
 ```bash
 cd web
-npm run lint
 npm run typecheck
 npm run build      # next build; catches static-export errors
-# optional: npm run test (vitest), npm run test:e2e (playwright)
+# optional: npm run test:e2e (playwright)
 ```
+
+**`npm run lint` is broken on `main`.** ESLint 10 (bumped by Dependabot) is incompatible with the `eslint-plugin-react` bundled inside `eslint-config-next`, and it dies with `TypeError: ... getFilename is not a function` before evaluating a single rule. It is therefore out of both gates. Fixing the dependency and turning the step back on is separate work.
+
+`npm test` in `web/` is also unusable as-is: there are no unit tests, and `vitest run` collects `e2e/smoke.spec.ts`, which is a Playwright spec. Use `npm run test:e2e` for that file.
 
 ### Full local PR gate
 ```bash
@@ -85,22 +96,26 @@ cp catalog.json web/public/catalog.json
 
 ## 6. CI / release model
 
-- `.github/workflows/feature.yml` — runs on `feature**`, `docs**`, `v*.*.*` branches. Auto-opens PR to `main` via `actions/github-script` using `.github/pull_request_template.md`.
-- `.github/workflows/pr-gate.yml` — runs on PRs to `main`. Uses `techpivot/terraform-module-releaser@v2` which **parses commit subjects** for semver keywords:
+Full detail, with the reason behind each choice: [`docs/agents/workflow.md`](docs/agents/workflow.md).
+
+- `.github/workflows/pr-checks.yml`, **gate 2**. Runs on push to the work branches. Two surface legs (`checks-terraform`, `checks-node`), a fixed-id `checks` rollup job that aggregates them, `security` (secret scan, from the org's shared CI, pinned by exact tag), and the automatic PR. `checks` and `security` are the two required status checks of the whole org; their names are fixed by contract and must not be renamed.
+- `.github/workflows/pr-gate.yml`: runs on PRs to `main`, including `closed`. Re-validates and **cuts the release**. Uses `techpivot/terraform-module-releaser@v2` which **parses commit subjects** for semver keywords:
   - **major**: `major change`, `breaking change`
   - **minor**: `feat`, `feature`
   - **patch**: `fix`, `hotfix`, `chore`, `docs`, `config`, `ci`
 
-  Use these exact prefixes. Module version tags: `aws/<name>/vX.Y.Z`.
+  Use these exact prefixes. `commitlint.config.mjs` enforces exactly this list at commit time, because a type outside it ships a change with **no version bump at all**. Module version tags: `aws/<name>/vX.Y.Z`.
 - `.github/workflows/deploy.yml` — runs on `main` push → builds + deploys `web/out/` to GitHub Pages.
 - Reusable: `reusable-modules-validation.yml` (per-module matrix: `fmt -check -recursive`, `init -backend=false`, `validate`), `reusable-catalog-validation.yml` (builds catalog, runs parser tests, builds web).
 
 ## 7. Repository-wide conventions
 
+- **Gate 1 is local, before the commit:** [`lefthook.yml`](lefthook.yml) runs `terraform fmt -check` on staged `.tf`, `gitleaks` on the staged diff, and `commitlint` on the message. Every one of those depends only on **machine equipment** installed globally (`lefthook`, `gitleaks`, `terraform`, the Node runtime behind `npx`); this repo versions only the declaration that it opts in. Node checks that need per-project `node_modules` deliberately live in gate 2, where the install is part of the job.
+- **Agent equipment is not versioned here.** Skills, subagents, commands and hook logic live in one place only, the global install. What *is* versioned is a marker file declaring opt-in to a global mechanism (`.claude/context-economy-protocol.md`).
 - **Generated files — never hand-edit:** `catalog.json` (root, gitignored), `web/public/catalog.json`, `web/out/`, `web/.next/`.
-- **Commit subject prefix** must match a releaser keyword (§6). Format: `feat(<module>): add event source mapping`.
-- **Branch naming**: `feature/<slug>`, `docs/<slug>`, `v<major>.<minor>.x`, `v<major>.<minor>.<patch>`. CI only triggers on these patterns.
-- **PR title**: auto-PRs use `pr(main): <branch> -> main`. Manual PRs follow `.github/pull_request_template.md`.
+- **Commit subject prefix** must match a releaser keyword (§6), enforced by `commitlint.config.mjs`. Format: `feat(<module>): add event source mapping`. Note this list is **narrower** than the branch-prefix list below, on purpose: a `refactor/` branch is fine and triggers CI normally, but its commits still carry a type from the releaser's list (usually `chore:`), because a type outside it ships a change with no version bump.
+- **Branch naming**: `feature/<slug>`, `docs/<slug>`, `v<major>.<minor>.x`, `v<major>.<minor>.<patch>`, or a conventional prefix (`feat/`, `fix/`, `chore/`, `config/`, `ci/`, `refactor/`, `test/`). **CI only triggers on the patterns listed in `pr-checks.yml`**: a branch outside them publishes no status check, and under the org ruleset its PR hangs waiting for a check nobody will publish.
+- **PR title**: the automatic PR uses the **most recent commit subject** of the branch (the shared `open-pr` workflow reads `git log FETCH_HEAD..HEAD | head -n1`, and `git log` is newest-first). It must therefore already obey the releaser contract: under squash merge that title becomes the commit message landing on `main`. Its **body** is a fixed one-liner from the shared workflow, not `.github/pull_request_template.md`; the template still applies to manually opened PRs. (Older PRs in the history use `pr(main): <branch> -> main`, from the `feature.yml` that `pr-checks.yml` replaced.)
 - **Secrets**: never commit `*.tfvars`, `*.tfstate*`, `.env*`. Enforced by `.gitignore`.
 
 ## 8. Terraform module conventions (`aws/<name>/`)
@@ -150,7 +165,7 @@ Every `.tf` file starts with block-comment header. Parser extracts `DESCRIPTION:
 ### Adding a new module
 
 1. Create `aws/<name>/` with files above.
-2. Add name to `modules` JSON array in **both** `pr-gate.yml` and `feature.yml`.
+2. Add name to `modules` JSON array in **both** `pr-checks.yml` and `pr-gate.yml`.
 3. If primary resource type isn't in `scripts/category-map.ts`, add entry for category + icon.
 4. Run full validation (§5).
 5. First commit: `feat(<name>): initial module` → minor bump + `v0.0.1` tag.
@@ -247,7 +262,7 @@ Before build, ensure `public/catalog.json` exists (`npm run catalog` or copy `..
 
 - Add/remove/rename Terraform module:
   1. Create/rename `aws/<name>/`.
-  2. Update `modules` array in `pr-gate.yml` **and** `feature.yml`.
+  2. Update `modules` array in `pr-checks.yml` **and** `pr-gate.yml`.
   3. Regenerate: `cd scripts && npm run build`.
   4. Parser fixtures in `scripts/__tests__/parser.test.ts` may need updates.
 - New AWS resource category → add entry to `scripts/category-map.ts`.
@@ -265,3 +280,5 @@ Before build, ensure `public/catalog.json` exists (`npm run catalog` or copy `..
 - Web design spec + component inventory: [DESIGN.md](./DESIGN.md).
 - Catalog schema: [catalog.schema.json](./catalog.schema.json).
 - Module docs (published): repo Wiki (auto-updated by releaser).
+- Agent configuration, one fixed-name doc per subject: [issue tracker](docs/agents/issue-tracker.md), [triage labels](docs/agents/triage-labels.md), [workflow](docs/agents/workflow.md), [domain](docs/agents/domain.md), [design](docs/agents/design.md).
+- The standard this repo obeys, and the checker that measures it: [`panlabs-tech/.github`](https://github.com/panlabs-tech/.github).

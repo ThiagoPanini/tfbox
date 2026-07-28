@@ -1,0 +1,71 @@
+# O portão 1, local, antes do commit. O portão 2 é a CI, no push
+# (`.github/workflows/pr-checks.yml`), e ele continua sendo o gate real: o que
+# este arquivo faz é pegar barato o erro barato, não substituir aquele.
+#
+# A anatomia panlabs cobra três coisas aqui, e o checker de conformidade as
+# verifica lendo este arquivo:
+#
+#   1. que o portão exista                     -> `local-commit-gate-exists`
+#   2. padrão de mensagem de commit            -> `commit-message-standard-declared`
+#   3. verificação de segredos antes do commit -> `secret-scan-before-commit`
+#
+# O terceiro cobra **`gitleaks` e não outro scanner**, e o motivo não é gosto: o
+# portão de CI compartilhado roda gitleaks, e um portão local que rodasse outro
+# faria "passou no local" e "passou na CI" significarem coisas diferentes.
+#
+# **As ferramentas são equipamento da máquina, não do repo.** `lefthook`,
+# `gitleaks`, `terraform` e o runtime que serve o `npx` são provisionados
+# globalmente; este arquivo é a *declaração* de que este repo adere ao portão, e
+# é ela que é versionada. Um repo aberto numa máquina sem equipamento
+# provisionado perde capacidade **por design**, e não por omissão.
+
+pre-commit:
+  parallel: true
+  commands:
+    # A superfície Terraform, que é o produto. `-check` e não a escrita: um hook
+    # que reescreve arquivo no meio do commit deixa o índice diferente do que o
+    # autor leu, e o que ele revisou não é o que aterrissa. A CI roda o mesmo
+    # `fmt -check` por módulo, então falhar aqui é falhar antes de empurrar.
+    terraform-fmt:
+      glob: "*.tf"
+      run: terraform fmt -check {staged_files}
+
+    # **A superfície Node não tem hook aqui, e a ausência é decidida.** O
+    # typecheck e o teste de `scripts/` e o build de `web/` dependem de
+    # `node_modules` daquela pasta, que é dependência **de projeto** e não
+    # equipamento da máquina: num clone recém-feito eles falhariam por falta de
+    # instalação, e um hook que barra por motivo que não é o código só ensina a
+    # usar `--no-verify`. Guardar com "se existir node_modules" seria pior,
+    # porque portão que passa em silêncio não é portão. Essas verificações moram
+    # no portão 2, onde a instalação é parte do job.
+    #
+    # O lint de `web/` está fora dos dois portões por outro motivo, este
+    # temporário: `npm run lint` está quebrado na main por incompatibilidade
+    # entre o ESLint 10 e o `eslint-plugin-react` embutido no
+    # `eslint-config-next`. Ver docs/agents/workflow.md.
+
+    # O scan de segredos roda sobre o **staged**, que é o único momento em que
+    # barrar ainda é barato: depois do commit o segredo já está no histórico
+    # local, e tirá-lo de lá é reescrita de história, não conserto.
+    # Binário direto, a mesma versão que a CI compartilhada pina, e não a action
+    # wrapper: aquela passou a exigir licença paga em repo de organização.
+    gitleaks:
+      run: gitleaks git --staged --no-banner --redact
+
+commit-msg:
+  commands:
+    # Aqui a mensagem de commit não é só convenção: ela é a entrada do release.
+    # O releaser lê o subject e decide o incremento de versão de cada módulo
+    # tocado, então um tipo fora da lista dele publica mudança sem versão que a
+    # nomeie. Ver commitlint.config.mjs e docs/agents/workflow.md.
+    #
+    # Via `npx` porque a raiz deste repo não tem `package.json`: as duas
+    # superfícies Node moram em `scripts/` e `web/`, e criar um manifesto na raiz
+    # só para hospedar um hook faria o checker passar a cobrar da raiz a
+    # toolchain inteira de uma superfície que ela não tem.
+    commitlint:
+      run: >-
+        npx --yes
+        --package @commitlint/cli@20.1.0
+        --package @commitlint/config-conventional@20.0.0
+        commitlint --edit {1}

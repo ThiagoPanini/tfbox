@@ -1,11 +1,12 @@
 name: "Reusable Catalog Validation"
 
+# The Node runtime version is NOT an input: it is read from the root
+# `.node-version`, which is the single place that declares it (the machine's
+# runtime manager reads the same file). An input with a default would be a
+# second declaration, and two declarations diverge the day one of them moves.
+
 on:
-  workflow_call:
-    inputs:
-      node_version:
-        type: string
-        default: "20"
+  workflow_call: {}
 
 permissions:
   contents: read
@@ -22,7 +23,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ inputs.node_version }}
+          node-version-file: .node-version
           cache: npm
           cache-dependency-path: |
             scripts/package-lock.json

@@ -25,7 +25,9 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: "20"
+          # Read from the root `.node-version`, the single declaration of the
+          # runtime version (see reusable-catalog-validation.yml).
+          node-version-file: .node-version
           cache: npm
           cache-dependency-path: |
             scripts/package-lock.json
